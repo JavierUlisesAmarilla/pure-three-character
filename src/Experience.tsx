@@ -1,21 +1,23 @@
-import {Scene} from 'three'
+import {AxesHelper, Scene} from 'three'
 import {Camera} from './Camera'
+import {Light} from './Light'
 import {Renderer} from './Renderer'
 import {Loaders} from './Utils/Loaders'
 import {Size} from './Utils/Size'
 import {Time} from './Utils/Time'
 import {World} from './World/World'
-import {assetArr} from './constants'
+import {AXES_LENGTH, assetArr} from './constants'
 
 let instance: Experience
 
 export class Experience {
   canvas!: HTMLCanvasElement
+  loaders
   size
   time
   scene
-  loaders
   camera
+  light
   renderer
   world
 
@@ -28,13 +30,15 @@ export class Experience {
     if (canvas) {
       this.canvas = canvas
     }
+    this.loaders = new Loaders(assetArr)
     this.size = new Size()
     this.time = new Time()
     this.scene = new Scene()
-    this.loaders = new Loaders(assetArr)
     this.camera = new Camera()
+    this.light = new Light()
     this.renderer = new Renderer()
     this.world = new World()
+    this.scene.add(new AxesHelper(AXES_LENGTH))
     this.size.on('resize', () => {
       this.resize()
     })

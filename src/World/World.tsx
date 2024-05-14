@@ -1,19 +1,19 @@
 import {Experience} from '../Experience'
-import {Room} from './Room'
+import {Ground} from './Ground'
 
 export class World {
-  room!: Room
+  ground!: Ground
 
   constructor() {
     const experience = new Experience()
     experience.loaders?.on('ready', () => {
-      this.room = new Room()
+      this.ground = new Ground()
     })
   }
 
   update() {
-    if (this.room) {
-      this.room.update()
+    if (this.ground) {
+      this.ground.update()
     }
   }
 }

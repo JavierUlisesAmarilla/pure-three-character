@@ -300,7 +300,7 @@ export class RapierPhysics {
         this.coll2mesh.set(collider.handle, mesh)
         return
       default:
-        console.log('Unknown shape to render.')
+        console.log('Unknown shape to render')
         break
     }
 
