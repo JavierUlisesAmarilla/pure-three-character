@@ -47,22 +47,16 @@ export class RapierPhysics {
     }
   }
 
-  createTrimeshRigidBody(group: THREE.Group) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO
-    group.traverse((child: any) => {
-      if (child.isMesh) {
-        const childMesh = child as THREE.Mesh
-        const geometry = childMesh.geometry
+  createTrimeshRigidBody(mesh: THREE.Mesh) {
+    const geometry = mesh.geometry
 
-        if (geometry.index) {
-          const bodyDesc = RAPIER.RigidBodyDesc.fixed()
-          const body = this.rapierWorld.createRigidBody(bodyDesc)
-          const colliderDesc = RAPIER.ColliderDesc.trimesh(geometry.attributes.position.array as Float32Array, geometry.index.array as Uint32Array)
-          const collider = this.rapierWorld.createCollider(colliderDesc, body)
-          this.addCollider(collider, childMesh.clone())
-        }
-      }
-    })
+    if (geometry.index) {
+      const bodyDesc = RAPIER.RigidBodyDesc.fixed()
+      const body = this.rapierWorld.createRigidBody(bodyDesc)
+      const colliderDesc = RAPIER.ColliderDesc.trimesh(geometry.attributes.position.array as Float32Array, geometry.index.array as Uint32Array)
+      const collider = this.rapierWorld.createCollider(colliderDesc, body)
+      this.addCollider(collider, mesh.clone())
+    }
   }
 
   update(debugRender: boolean = false) {

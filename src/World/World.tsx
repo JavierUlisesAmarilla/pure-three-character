@@ -17,7 +17,6 @@ export class World {
 
   update() {
     if (this.ground) {
-      this.ground.update()
       this.character.update()
     }
   }
