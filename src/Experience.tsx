@@ -4,6 +4,7 @@ import {Environment} from './Environment'
 import {Light} from './Light'
 import {Renderer} from './Renderer'
 import {Loaders} from './Utils/Loaders'
+import {RapierPhysics} from './Utils/RapierPhysics'
 import {Size} from './Utils/Size'
 import {Time} from './Utils/Time'
 import {World} from './World/World'
@@ -20,8 +21,9 @@ export class Experience {
   camera
   light
   renderer
-  world
   environment
+  rapierPhysics
+  world
 
   constructor(canvas: HTMLCanvasElement | undefined = undefined) {
     if (instance) {
@@ -39,8 +41,9 @@ export class Experience {
     this.camera = new Camera()
     this.light = new Light()
     this.renderer = new Renderer()
-    this.world = new World()
     this.environment = new Environment()
+    this.rapierPhysics = new RapierPhysics(this.scene)
+    this.world = new World()
     this.scene.add(new AxesHelper(AXES_LENGTH))
     this.size.on('resize', () => {
       this.resize()
@@ -63,11 +66,11 @@ export class Experience {
     if (this.camera) {
       this.camera.update()
     }
-    if (this.world) {
-      this.world.update()
-    }
     if (this.renderer) {
       this.renderer.update()
+    }
+    if (this.world) {
+      this.world.update()
     }
   }
 }

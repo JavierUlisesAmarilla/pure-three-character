@@ -8,6 +8,7 @@ export class World {
 
   constructor() {
     const experience = new Experience()
+
     experience.loaders?.on('ready', () => {
       this.ground = new Ground()
       this.ground = new Character()
