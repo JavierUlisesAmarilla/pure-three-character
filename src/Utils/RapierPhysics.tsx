@@ -8,14 +8,18 @@ const CONE_INSTANCE_INDEX = 3
 const dummy = new THREE.Object3D()
 
 interface InstanceDesc {
-  groupId: number
-  instanceId: number
-  elementId: number
-  highlighted: boolean
-  scale?: THREE.Vector3
+  groupId: number;
+  instanceId: number;
+  elementId: number;
+  highlighted: boolean;
+  scale?: THREE.Vector3;
 }
 
-type DescriptorType = 'dynamic' | 'kinematicPositionBased' | 'kinematicVelocityBased' | 'fixed'
+type DescriptorType =
+  | 'dynamic'
+  | 'kinematicPositionBased'
+  | 'kinematicVelocityBased'
+  | 'fixed';
 
 export class RapierPhysics {
   rapierWorld: RAPIER.World
@@ -55,11 +59,12 @@ export class RapierPhysics {
     position = [0, 0, 0],
     descriptor = 'dynamic',
   }: {
-    mesh: THREE.Mesh,
-    scale?: number,
-    position?: number[],
-    descriptor?: DescriptorType
+    mesh: THREE.Mesh;
+    scale?: number;
+    position?: number[];
+    descriptor?: DescriptorType;
   }) {
+    mesh.scale.set(scale, scale, scale)
     const geometry = mesh.geometry
     if (!geometry.index) {
       return
@@ -67,9 +72,13 @@ export class RapierPhysics {
     const bodyDesc = getRigidBodyDesc(descriptor)
     bodyDesc.setTranslation(position[0], position[1], position[2])
     const body = this.rapierWorld.createRigidBody(bodyDesc)
-    const colliderDesc = RAPIER.ColliderDesc.trimesh((geometry.attributes.position.array.map((value) => value * scale)) as Float32Array, geometry.index.array as Uint32Array)
+    const colliderDesc = RAPIER.ColliderDesc.trimesh(
+      geometry.attributes.position.array.map(
+          (value) => value * scale,
+      ) as Float32Array,
+      geometry.index.array as Uint32Array,
+    )
     const collider = this.rapierWorld.createCollider(colliderDesc, body)
-    mesh.scale.set(scale, scale, scale)
     this.addCollider(collider, mesh)
   }
 
@@ -77,8 +86,14 @@ export class RapierPhysics {
     if (debugRender) {
       const buffers = this.rapierWorld.debugRender()
       this.lines.visible = true
-      this.lines.geometry.setAttribute('position', new THREE.BufferAttribute(buffers.vertices, 3))
-      this.lines.geometry.setAttribute('color', new THREE.BufferAttribute(buffers.colors, 4))
+      this.lines.geometry.setAttribute(
+          'position',
+          new THREE.BufferAttribute(buffers.vertices, 3),
+      )
+      this.lines.geometry.setAttribute(
+          'color',
+          new THREE.BufferAttribute(buffers.colors, 4),
+      )
     } else {
       this.lines.visible = false
     }
@@ -179,9 +194,7 @@ export class RapierPhysics {
     const instance = this.instanceGroupArr[gfx.groupId][gfx.instanceId]
 
     if (instance.count > 1) {
-      const coll2 = instance.userData.elementId2coll.get(
-          instance.count - 1,
-      )
+      const coll2 = instance.userData.elementId2coll.get(instance.count - 1)
       instance.userData.elementId2coll.delete(instance.count - 1)
       instance.userData.elementId2coll.set(gfx.elementId, coll2)
       const gfx2 = this.coll2instance.get(coll2.handle)
@@ -194,7 +207,10 @@ export class RapierPhysics {
     this.coll2instance.delete(collider.handle)
   }
 
-  addCollider(collider: RAPIER.Collider, mesh: THREE.Mesh | undefined = undefined) {
+  addCollider(
+      collider: RAPIER.Collider,
+      mesh: THREE.Mesh | undefined = undefined,
+  ) {
     const parent = collider.parent()
     if (!parent) {
       return
@@ -217,14 +233,16 @@ export class RapierPhysics {
       case RAPIER.ShapeType.Cuboid:
         // eslint-disable-next-line no-case-declarations -- TODO
         const hExt = collider.halfExtents()
-        instance = this.instanceGroupArr[BOX_INSTANCE_INDEX][instanceDesc.instanceId]
+        instance =
+          this.instanceGroupArr[BOX_INSTANCE_INDEX][instanceDesc.instanceId]
         instanceDesc.groupId = BOX_INSTANCE_INDEX
         instanceDesc.scale = new THREE.Vector3(hExt.x, hExt.y, hExt.z)
         break
       case RAPIER.ShapeType.Ball:
         // eslint-disable-next-line no-case-declarations -- TODO
         const rad = collider.radius()
-        instance = this.instanceGroupArr[BALL_INSTANCE_INDEX][instanceDesc.instanceId]
+        instance =
+          this.instanceGroupArr[BALL_INSTANCE_INDEX][instanceDesc.instanceId]
         instanceDesc.groupId = BALL_INSTANCE_INDEX
         instanceDesc.scale = new THREE.Vector3(rad, rad, rad)
         break
@@ -234,7 +252,10 @@ export class RapierPhysics {
         const cylRad = collider.radius()
         // eslint-disable-next-line no-case-declarations -- TODO
         const cylHeight = collider.halfHeight() * 2.0
-        instance = this.instanceGroupArr[CYLINDER_INSTANCE_INDEX][instanceDesc.instanceId]
+        instance =
+          this.instanceGroupArr[CYLINDER_INSTANCE_INDEX][
+              instanceDesc.instanceId
+          ]
         instanceDesc.groupId = CYLINDER_INSTANCE_INDEX
         instanceDesc.scale = new THREE.Vector3(cylRad, cylHeight, cylRad)
         break
@@ -243,7 +264,8 @@ export class RapierPhysics {
         const coneRad = collider.radius()
         // eslint-disable-next-line no-case-declarations -- TODO
         const coneHeight = collider.halfHeight() * 2.0
-        instance = this.instanceGroupArr[CONE_INSTANCE_INDEX][instanceDesc.instanceId]
+        instance =
+          this.instanceGroupArr[CONE_INSTANCE_INDEX][instanceDesc.instanceId]
         instanceDesc.groupId = CONE_INSTANCE_INDEX
         instanceDesc.scale = new THREE.Vector3(coneRad, coneHeight, coneRad)
         break
@@ -275,7 +297,11 @@ export class RapierPhysics {
     dummy.position.set(t.x, t.y, t.z)
     dummy.quaternion.set(r.x, r.y, r.z, r.w)
     if (instanceDesc.scale) {
-      dummy.scale.set(instanceDesc.scale.x, instanceDesc.scale.y, instanceDesc.scale.z)
+      dummy.scale.set(
+          instanceDesc.scale.x,
+          instanceDesc.scale.y,
+          instanceDesc.scale.z,
+      )
     }
     dummy.updateMatrix()
 
