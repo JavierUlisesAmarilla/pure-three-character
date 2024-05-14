@@ -26,6 +26,8 @@ export class Ground {
     if (!this.scene || !this.model) {
       return
     }
+    this.model.scene.scale.set(10, 10, 10)
+    this.model.scene.position.y = 6
     this.scene.add(this.model.scene)
   }
 

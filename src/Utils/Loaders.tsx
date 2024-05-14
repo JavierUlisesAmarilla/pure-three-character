@@ -38,12 +38,10 @@ export class Loaders extends EventEmitter {
     this.loaders = {}
     this.loaders.loadingManager = new LoadingManager(
         () => {
-          setTimeout(() => {
-            this.trigger('closeOverlay')
-            loadingBar.classList.add('ended')
-            loadingLogo.classList.add('ended')
-            loadingBar.style.transform = ''
-          }, 2000)
+          this.trigger('closeOverlay')
+          loadingBar.classList.add('ended')
+          loadingLogo.classList.add('ended')
+          loadingBar.style.transform = ''
         },
         (itemUrl, itemsLoaded, itemsTotal) => {
           const progressRatio = itemsLoaded / itemsTotal

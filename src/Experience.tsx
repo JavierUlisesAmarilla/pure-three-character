@@ -1,5 +1,6 @@
 import {AxesHelper, Scene} from 'three'
 import {Camera} from './Camera'
+import {Environment} from './Environment'
 import {Light} from './Light'
 import {Renderer} from './Renderer'
 import {Loaders} from './Utils/Loaders'
@@ -20,6 +21,7 @@ export class Experience {
   light
   renderer
   world
+  environment
 
   constructor(canvas: HTMLCanvasElement | undefined = undefined) {
     if (instance) {
@@ -38,6 +40,7 @@ export class Experience {
     this.light = new Light()
     this.renderer = new Renderer()
     this.world = new World()
+    this.environment = new Environment()
     this.scene.add(new AxesHelper(AXES_LENGTH))
     this.size.on('resize', () => {
       this.resize()
