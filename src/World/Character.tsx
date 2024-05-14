@@ -2,7 +2,7 @@ import {AnimationMixer} from 'three'
 import {GLTF} from 'three/examples/jsm/loaders/GLTFLoader'
 import {Experience} from '../Experience'
 
-export class Ground {
+export class Character {
   scene
   time
   model: GLTF
@@ -13,7 +13,7 @@ export class Ground {
     const experience = new Experience()
     this.scene = experience.scene
     this.time = experience.time
-    this.model = experience.loaders?.items.groundModel
+    this.model = experience.loaders?.items.characterModel
     this.animMixer = new AnimationMixer(this.model.scene)
     this.animActionArr = this.model.animations.map((anim) =>
       this.animMixer.clipAction(anim),
@@ -26,8 +26,6 @@ export class Ground {
     if (!this.scene || !this.model) {
       return
     }
-    this.model.scene.scale.set(20, 20, 20)
-    this.model.scene.position.y = 12
     this.scene.add(this.model.scene)
   }
 
