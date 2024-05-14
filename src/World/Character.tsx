@@ -1,4 +1,4 @@
-import {AnimationMixer} from 'three'
+import {AnimationAction, AnimationMixer} from 'three'
 import {GLTF} from 'three/examples/jsm/loaders/GLTFLoader'
 import {Experience} from '../Experience'
 
@@ -7,7 +7,7 @@ export class Character {
   time
   model: GLTF
   animMixer
-  animActionArr
+  animActions: Map<string, AnimationAction>
 
   constructor() {
     const experience = new Experience()
@@ -15,9 +15,7 @@ export class Character {
     this.time = experience.time
     this.model = experience.loaders?.items.characterModel
     this.animMixer = new AnimationMixer(this.model.scene)
-    this.animActionArr = this.model.animations.map((anim) =>
-      this.animMixer.clipAction(anim),
-    )
+    this.animActions = new Map()
     this.initModel()
     this.initAnim()
   }
@@ -30,9 +28,10 @@ export class Character {
   }
 
   initAnim() {
-    if (this.animActionArr.length) {
-      this.animActionArr[0].play()
-    }
+    this.model.animations.forEach((anim) => {
+      this.animActions.set(anim.name, this.animMixer.clipAction(anim))
+    })
+    this.animActions.get('Idle')?.play()
   }
 
   update() {
