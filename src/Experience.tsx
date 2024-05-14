@@ -69,6 +69,9 @@ export class Experience {
     if (this.renderer) {
       this.renderer.update()
     }
+    if (this.rapierPhysics) {
+      this.rapierPhysics.update(true)
+    }
     if (this.world) {
       this.world.update()
     }

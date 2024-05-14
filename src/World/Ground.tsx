@@ -8,11 +8,13 @@ export class Ground {
   model: GLTF
   animMixer
   animActionArr
+  rapierPhysics
 
   constructor() {
     const experience = new Experience()
     this.scene = experience.scene
     this.time = experience.time
+    this.rapierPhysics = experience.rapierPhysics
     this.model = experience.loaders?.items.groundModel
     this.animMixer = new AnimationMixer(this.model.scene)
     this.animActionArr = this.model.animations.map((anim) =>
@@ -23,12 +25,10 @@ export class Ground {
   }
 
   initModel() {
-    if (!this.scene || !this.model) {
+    if (!this.scene || !this.model || !this.rapierPhysics) {
       return
     }
-    this.model.scene.scale.set(20, 20, 20)
-    this.model.scene.position.y = 12
-    this.scene.add(this.model.scene)
+    this.rapierPhysics.createTrimeshRigidBody(this.model.scene)
   }
 
   initAnim() {

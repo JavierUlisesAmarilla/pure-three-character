@@ -15,46 +15,6 @@ interface InstanceDesc {
   scale?: THREE.Vector3
 }
 
-const genHeightfieldGeometry = (collider: RAPIER.Collider) => {
-  const heights = collider.heightfieldHeights()
-  const nRows = collider.heightfieldNRows()
-  const nCols = collider.heightfieldNCols()
-  const scale = collider.heightfieldScale()
-
-  const vertices = []
-  const indices = []
-  const eltWX = 1.0 / nRows
-  const eltWY = 1.0 / nCols
-
-  let i: number
-  let j: number
-
-  for (j = 0; j <= nCols; ++j) {
-    for (i = 0; i <= nRows; ++i) {
-      const x = ((j * eltWX) - 0.5) * scale.x
-      const y = heights[(j * (nRows + 1)) + i] * scale.y
-      const z = ((i * eltWY) - 0.5) * scale.z
-      vertices.push(x, y, z)
-    }
-  }
-
-  for (j = 0; j < nCols; ++j) {
-    for (i = 0; i < nRows; ++i) {
-      const i1 = ((i + 0) * (nCols + 1)) + (j + 0)
-      const i2 = ((i + 0) * (nCols + 1)) + (j + 1)
-      const i3 = ((i + 1) * (nCols + 1)) + (j + 0)
-      const i4 = ((i + 1) * (nCols + 1)) + (j + 1)
-      indices.push(i1, i3, i2)
-      indices.push(i3, i4, i2)
-    }
-  }
-
-  return {
-    vertices: new Float32Array(vertices),
-    indices: new Uint32Array(indices),
-  }
-}
-
 export class RapierPhysics {
   rapierWorld: RAPIER.World
   coll2instance: Map<number, InstanceDesc>
@@ -87,7 +47,27 @@ export class RapierPhysics {
     }
   }
 
-  update(debugRender: boolean) {
+  createTrimeshRigidBody(group: THREE.Group) {
+    if (!group) {
+      return
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO
+    group.traverse((child: any) => {
+      if (child.isMesh) {
+        const geometry: THREE.BufferGeometry = child.geometry
+        if (geometry.index) {
+          const bodyDesc = RAPIER.RigidBodyDesc.fixed()
+          const body = this.rapierWorld.createRigidBody(bodyDesc)
+          const colliderDesc = RAPIER.ColliderDesc.trimesh(geometry.attributes.position.array as Float32Array, geometry.index.array as Uint32Array)
+          const collider = this.rapierWorld.createCollider(colliderDesc, body)
+          this.addCollider(collider, (child as THREE.Mesh).clone())
+        }
+      }
+    })
+  }
+
+  update(debugRender: boolean = false) {
     if (debugRender) {
       const buffers = this.rapierWorld.debugRender()
       this.lines.visible = true
@@ -206,7 +186,7 @@ export class RapierPhysics {
     this.coll2instance.delete(collider.handle)
   }
 
-  addCollider(collider: RAPIER.Collider) {
+  addCollider(collider: RAPIER.Collider, mesh: THREE.Mesh | undefined = undefined) {
     const parent = collider.parent()
     if (!parent) {
       return
@@ -263,41 +243,10 @@ export class RapierPhysics {
       case RAPIER.ShapeType.HeightField:
       case RAPIER.ShapeType.ConvexPolyhedron:
       case RAPIER.ShapeType.RoundConvexPolyhedron:
-        // eslint-disable-next-line no-case-declarations -- TODO
-        const geometry = new THREE.BufferGeometry()
-        // eslint-disable-next-line no-case-declarations -- TODO
-        let vertices: Float32Array
-        // eslint-disable-next-line no-case-declarations -- TODO
-        let indices: Uint32Array | undefined
-
-        if (collider.shapeType() !== RAPIER.ShapeType.HeightField) {
-          vertices = collider.vertices()
-          indices = collider.indices()
-        } else {
-          const g = genHeightfieldGeometry(collider)
-          vertices = g.vertices
-          indices = g.indices
+        if (mesh) {
+          this.scene.add(mesh)
+          this.coll2mesh.set(collider.handle, mesh)
         }
-
-        if (indices) {
-          geometry.setIndex(Array.from(indices))
-        }
-        geometry.setAttribute(
-            'position',
-            new THREE.BufferAttribute(vertices, 3),
-        )
-
-        // eslint-disable-next-line no-case-declarations -- TODO
-        const material = new THREE.MeshPhongMaterial({
-          color: 0xff0000,
-          side: THREE.DoubleSide,
-          flatShading: true,
-        })
-
-        // eslint-disable-next-line no-case-declarations -- TODO
-        const mesh = new THREE.Mesh(geometry, material)
-        this.scene.add(mesh)
-        this.coll2mesh.set(collider.handle, mesh)
         return
       default:
         console.log('Unknown shape to render')

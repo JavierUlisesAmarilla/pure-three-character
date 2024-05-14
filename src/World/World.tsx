@@ -11,13 +11,14 @@ export class World {
 
     experience.loaders?.on('ready', () => {
       this.ground = new Ground()
-      this.ground = new Character()
+      this.character = new Character()
     })
   }
 
   update() {
     if (this.ground) {
       this.ground.update()
+      this.character.update()
     }
   }
 }
