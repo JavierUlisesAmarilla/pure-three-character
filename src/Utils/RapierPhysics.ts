@@ -47,16 +47,17 @@ export class RapierPhysics {
     }
   }
 
-  createTrimeshRigidBody(mesh: THREE.Mesh) {
+  createTrimeshRigidBody({mesh, scale = 1}: {mesh: THREE.Mesh, scale?: number}) {
     const geometry = mesh.geometry
-
-    if (geometry.index) {
-      const bodyDesc = RAPIER.RigidBodyDesc.fixed()
-      const body = this.rapierWorld.createRigidBody(bodyDesc)
-      const colliderDesc = RAPIER.ColliderDesc.trimesh(geometry.attributes.position.array as Float32Array, geometry.index.array as Uint32Array)
-      const collider = this.rapierWorld.createCollider(colliderDesc, body)
-      this.addCollider(collider, mesh.clone())
+    if (!geometry.index) {
+      return
     }
+    const bodyDesc = RAPIER.RigidBodyDesc.dynamic()
+    const body = this.rapierWorld.createRigidBody(bodyDesc)
+    const colliderDesc = RAPIER.ColliderDesc.trimesh((geometry.attributes.position.array.map((value) => value * scale)) as Float32Array, geometry.index.array as Uint32Array)
+    const collider = this.rapierWorld.createCollider(colliderDesc, body)
+    mesh.scale.set(scale, scale, scale)
+    this.addCollider(collider, mesh)
   }
 
   update(debugRender: boolean = false) {

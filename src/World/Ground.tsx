@@ -21,7 +21,7 @@ export class Ground {
     if (!this.scene || !this.model || !this.rapierPhysics) {
       return
     }
-    const mergedModel = mergeModelMeshes(this.model.scene)
-    this.rapierPhysics.createTrimeshRigidBody(mergedModel)
+    const mesh = mergeModelMeshes(this.model.scene)
+    this.rapierPhysics.createTrimeshRigidBody({mesh, scale: 10})
   }
 }
