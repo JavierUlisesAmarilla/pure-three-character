@@ -25,7 +25,8 @@ export class Ground {
     this.rapierPhysics.createTrimeshRigidBody({
       mesh,
       scale: 10,
-      position: [0, 6, 0],
+      position: [0, 6.5, 0],
+      descriptor: 'fixed',
     })
   }
 }

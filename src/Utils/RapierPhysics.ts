@@ -15,6 +15,8 @@ interface InstanceDesc {
   scale?: THREE.Vector3
 }
 
+type DescriptorType = 'dynamic' | 'kinematicPositionBased' | 'kinematicVelocityBased' | 'fixed'
+
 export class RapierPhysics {
   rapierWorld: RAPIER.World
   coll2instance: Map<number, InstanceDesc>
@@ -47,12 +49,23 @@ export class RapierPhysics {
     }
   }
 
-  createTrimeshRigidBody({mesh, scale = 1, position = [0, 0, 0]}: {mesh: THREE.Mesh, scale?: number, position?: number[]}) {
+  createTrimeshRigidBody({
+    mesh,
+    scale = 1,
+    position = [0, 0, 0],
+    descriptor = 'dynamic',
+  }: {
+    mesh: THREE.Mesh,
+    scale?: number,
+    position?: number[],
+    descriptor?: DescriptorType
+  }) {
     const geometry = mesh.geometry
     if (!geometry.index) {
       return
     }
-    const bodyDesc = RAPIER.RigidBodyDesc.dynamic().setTranslation(position[0], position[1], position[2])
+    const bodyDesc = getRigidBodyDesc(descriptor)
+    bodyDesc.setTranslation(position[0], position[1], position[2])
     const body = this.rapierWorld.createRigidBody(bodyDesc)
     const colliderDesc = RAPIER.ColliderDesc.trimesh((geometry.attributes.position.array.map((value) => value * scale)) as Float32Array, geometry.index.array as Uint32Array)
     const collider = this.rapierWorld.createCollider(colliderDesc, body)
@@ -69,6 +82,8 @@ export class RapierPhysics {
     } else {
       this.lines.visible = false
     }
+
+    this.rapierWorld.step()
 
     this.rapierWorld.forEachCollider((elt) => {
       const gfx = this.coll2instance.get(elt.handle)
@@ -271,4 +286,25 @@ export class RapierPhysics {
 
     this.coll2instance.set(collider.handle, instanceDesc)
   }
+}
+
+const getRigidBodyDesc = (descriptor: DescriptorType) => {
+  let bodyDesc
+
+  switch (descriptor) {
+    case 'kinematicPositionBased':
+      bodyDesc = RAPIER.RigidBodyDesc.kinematicPositionBased()
+      break
+    case 'kinematicVelocityBased':
+      bodyDesc = RAPIER.RigidBodyDesc.kinematicVelocityBased()
+      break
+    case 'fixed':
+      bodyDesc = RAPIER.RigidBodyDesc.fixed()
+      break
+    default:
+      bodyDesc = RAPIER.RigidBodyDesc.dynamic()
+      break
+  }
+
+  return bodyDesc
 }
