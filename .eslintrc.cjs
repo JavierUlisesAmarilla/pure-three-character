@@ -95,6 +95,7 @@ module.exports = {
     'require-jsdoc': 'off',
     'require-await': 'error',
     'linebreak-style': ['error', 'unix'],
+    'new-cap': 'off',
   },
   settings: {
     jsdoc: {
