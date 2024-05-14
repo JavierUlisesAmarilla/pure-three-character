@@ -25,7 +25,6 @@ export class RapierPhysics {
   rapierWorld: RAPIER.World
   coll2instance: Map<number, InstanceDesc>
   coll2mesh: Map<number, THREE.Mesh>
-  rb2colls: Map<number, Array<RAPIER.Collider>>
   scene: THREE.Scene
   instanceGroupArr: Array<Array<THREE.InstancedMesh>>
   highlightInstanceArr: Array<THREE.InstancedMesh>
@@ -36,7 +35,6 @@ export class RapierPhysics {
     this.rapierWorld = new RAPIER.World(new RAPIER.Vector3(0.0, -9.81, 0.0))
     this.coll2instance = new Map()
     this.coll2mesh = new Map()
-    this.rb2colls = new Map()
     this.scene = scene
     this.instanceGroupArr = []
     this.highlightInstanceArr = []
@@ -174,15 +172,12 @@ export class RapierPhysics {
     })
 
     this.coll2instance = new Map()
-    this.rb2colls = new Map()
   }
 
   removeRigidBody(body: RAPIER.RigidBody) {
-    const colls = this.rb2colls.get(body.handle)
-
-    if (colls) {
-      colls.forEach((coll) => this.removeCollider(coll))
-      this.rb2colls.delete(body.handle)
+    const numColliders = body.numColliders()
+    for (let i = 0; i < numColliders; i++) {
+      this.removeCollider(body.collider(i))
     }
   }
 
@@ -214,11 +209,6 @@ export class RapierPhysics {
     const parent = collider.parent()
     if (!parent) {
       return
-    }
-    if (!this.rb2colls.get(parent.handle)) {
-      this.rb2colls.set(parent.handle, [collider])
-    } else {
-      this.rb2colls.get(parent.handle)?.push(collider)
     }
 
     let instance
