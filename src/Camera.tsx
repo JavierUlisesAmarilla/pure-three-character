@@ -3,18 +3,24 @@ import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
 import {Experience} from './Experience'
 import {IS_ORBIT_CONTROLS_USED} from './constants'
 
+const limitMovement = 200
+
 export class Camera {
   instance?: PerspectiveCamera
+  canvas
   size
   scene
-  canvas
+  characterRb
+  cameraRotY
   controls?: OrbitControls
 
   constructor() {
     const experience = new Experience()
+    this.canvas = experience.canvas
     this.size = experience.size
     this.scene = experience.scene
-    this.canvas = experience.canvas
+    this.characterRb = experience.world?.character.rb
+    this.cameraRotY = 0
     this.initInstance()
     this.initControls()
     this.initEvents()
@@ -45,6 +51,23 @@ export class Camera {
     if (!IS_ORBIT_CONTROLS_USED) {
       document.addEventListener('mousedown', () => {
         document.body.requestPointerLock()
+      })
+
+      document.addEventListener('mousemove', (event) => {
+        if (
+          document.pointerLockElement === document.body &&
+          this.instance &&
+          this.characterRb
+        ) {
+          let {movementX} = event
+          if (movementX > limitMovement) {
+            movementX = limitMovement
+          }
+          if (movementX < -limitMovement) {
+            movementX = -limitMovement
+          }
+          this.cameraRotY -= movementX * Math.PI * 0.0001
+        }
       })
     }
   }

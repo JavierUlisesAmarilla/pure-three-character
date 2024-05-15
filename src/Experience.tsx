@@ -18,12 +18,12 @@ export class Experience {
   size?: Size
   time?: Time
   scene?: Scene
-  camera?: Camera
   light?: Light
-  renderer?: Renderer
   environment?: Environment
   rapierPhysics?: RapierPhysics
   world?: World
+  camera?: Camera
+  renderer?: Renderer
 
   constructor(canvas: HTMLCanvasElement | undefined = undefined) {
     if (instance) {
@@ -39,12 +39,12 @@ export class Experience {
       this.size = new Size()
       this.time = new Time()
       this.scene = new Scene()
-      this.camera = new Camera()
       this.light = new Light()
-      this.renderer = new Renderer()
       this.environment = new Environment()
       this.rapierPhysics = new RapierPhysics(this.scene)
       this.world = new World()
+      this.camera = new Camera()
+      this.renderer = new Renderer()
       if (IS_DEV_MODE) {
         this.scene.add(new AxesHelper(AXES_LENGTH))
       }
