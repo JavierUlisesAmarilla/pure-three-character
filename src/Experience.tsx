@@ -8,7 +8,7 @@ import {RapierPhysics} from './Utils/RapierPhysics'
 import {Size} from './Utils/Size'
 import {Time} from './Utils/Time'
 import {World} from './World/World'
-import {AXES_LENGTH, assetArr} from './constants'
+import {AXES_LENGTH, IS_DEV_MODE, assetArr} from './constants'
 
 let instance: Experience
 
@@ -44,7 +44,9 @@ export class Experience {
     this.environment = new Environment()
     this.rapierPhysics = new RapierPhysics(this.scene)
     this.world = new World()
-    this.scene.add(new AxesHelper(AXES_LENGTH))
+    if (IS_DEV_MODE) {
+      this.scene.add(new AxesHelper(AXES_LENGTH))
+    }
     this.size.on('resize', () => {
       this.resize()
     })
@@ -70,7 +72,7 @@ export class Experience {
       this.renderer.update()
     }
     if (this.rapierPhysics) {
-      this.rapierPhysics.update(true)
+      this.rapierPhysics.update(IS_DEV_MODE)
     }
     if (this.world) {
       this.world.update()

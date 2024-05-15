@@ -1,5 +1,7 @@
 import {AssetType} from './types'
 
+export const IS_DEV_MODE = true
+
 export const assetArr: AssetType[] = [
   {
     name: 'groundModel',
