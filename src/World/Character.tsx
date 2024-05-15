@@ -51,7 +51,7 @@ export class Character {
     this.model.scene.rotation.set(0, Math.PI, 0)
     this.rb = this.rapierPhysics.createBallsRigidBody({
       object3d,
-      ballInfoArr: [{radius: 1, position: [0, 1, 0], scale: 1}],
+      ballInfoArr: [{radius: 1, position: [0, 1, 0]}],
       enabledRotations: [false, true, false],
     })
   }

@@ -10,7 +10,6 @@ type DescriptorType =
 type BallInfoType = {
   radius: number;
   position: number[];
-  scale: number;
 };
 
 export class RapierPhysics {
