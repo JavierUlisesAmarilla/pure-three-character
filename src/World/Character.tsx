@@ -2,6 +2,7 @@ import RAPIER from '@dimforge/rapier3d'
 import {AnimationAction, AnimationMixer} from 'three'
 import {GLTF} from 'three/examples/jsm/loaders/GLTFLoader'
 import {Experience} from '../Experience'
+import AnimController from '../Utils/animController'
 
 export class Character {
   scene
@@ -10,8 +11,8 @@ export class Character {
   rapierPhysics
   model: GLTF
   animMixer: AnimationMixer
-  animActions: Map<string, AnimationAction>
   rb?: RAPIER.RigidBody
+  animController?: AnimController
 
   constructor() {
     const experience = new Experience()
@@ -19,7 +20,6 @@ export class Character {
     this.time = experience.time
     this.keyboard = experience.keyboard
     this.rapierPhysics = experience.rapierPhysics
-    this.animActions = new Map()
     this.model = experience.loaders?.items.characterModel
     this.animMixer = new AnimationMixer(this.model.scene)
     this.initModel()
@@ -42,12 +42,21 @@ export class Character {
   }
 
   initAnim() {
+    if (!this.animMixer) {
+      return
+    }
+    const animActions: {[key: string]: AnimationAction} = {}
     this.model?.animations.forEach((anim) => {
-      if (this.animMixer) {
-        this.animActions.set(anim.name, this.animMixer.clipAction(anim))
-      }
+      animActions[anim.name] = this.animMixer.clipAction(anim)
     })
-    this.animActions.get('Idle')?.play()
+    const animControllerActions = {
+      Idle: animActions['Idle'],
+      Walk: animActions['Walk'],
+      Run: animActions['Run'],
+      Jump: animActions['Combat_Idle'],
+    }
+    this.animController = new AnimController(this.animMixer, animControllerActions)
+    this.animController.playNewActionOnly('Idle')
   }
 
   update() {
