@@ -1,3 +1,4 @@
+import RAPIER from '@dimforge/rapier3d'
 import {AnimationAction, AnimationMixer} from 'three'
 import {GLTF} from 'three/examples/jsm/loaders/GLTFLoader'
 import {Experience} from '../Experience'
@@ -9,6 +10,7 @@ export class Character {
   model: GLTF
   animMixer
   animActions: Map<string, AnimationAction>
+  rb!: RAPIER.RigidBody
 
   constructor() {
     const experience = new Experience()
@@ -27,7 +29,7 @@ export class Character {
       return
     }
     this.scene.add(this.model.scene)
-    this.rapierPhysics.createBallsRigidBody({
+    this.rb = this.rapierPhysics.createBallsRigidBody({
       object3d: this.model.scene,
       ballInfoArr: [
         {radius: 0.5, position: [0, 0.5, 0], scale: 1},

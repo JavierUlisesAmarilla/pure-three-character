@@ -12,6 +12,7 @@ export class Loaders extends EventEmitter {
   loaded: number
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO
   loaders: any
+  prevProgressRatio: number
 
   constructor(assets: AssetType[]) {
     super()
@@ -23,6 +24,7 @@ export class Loaders extends EventEmitter {
     this.items = {}
     this.toLoad = this.assets.length
     this.loaded = 0
+    this.prevProgressRatio = 0
     this.setLoaders()
     this.startLoading()
   }
@@ -38,14 +40,16 @@ export class Loaders extends EventEmitter {
     this.loaders = {}
     this.loaders.loadingManager = new LoadingManager(
         () => {
-          this.trigger('closeOverlay')
           loadingBar.classList.add('ended')
           loadingLogo.classList.add('ended')
           loadingBar.style.transform = ''
         },
         (itemUrl, itemsLoaded, itemsTotal) => {
           const progressRatio = itemsLoaded / itemsTotal
-          loadingBar.style.transform = `scaleX(${progressRatio})`
+          if (this.prevProgressRatio < progressRatio) {
+            this.prevProgressRatio = progressRatio
+          }
+          loadingBar.style.transform = `scaleX(${this.prevProgressRatio})`
         },
     )
     this.loaders.dracoLoader = new DRACOLoader(this.loaders.loadingManager)

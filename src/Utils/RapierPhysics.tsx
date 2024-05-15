@@ -75,6 +75,7 @@ export class RapierPhysics {
     }
 
     this.addRigidBody(body, mesh)
+    return body
   }
 
   createBallsRigidBody({
@@ -114,6 +115,7 @@ export class RapierPhysics {
     }
 
     this.addRigidBody(body, object3d)
+    return body
   }
 
   addRigidBody(rb: RAPIER.RigidBody, object3d: THREE.Object3D) {
