@@ -49,9 +49,9 @@ export class Character {
     const object3d = new Object3D()
     object3d.add(this.model.scene)
     this.model.scene.rotation.set(0, Math.PI, 0)
-    this.rb = this.rapierPhysics.createBallsRigidBody({
+    this.rb = this.rapierPhysics.createCapsulesRigidBody({
       object3d,
-      ballInfoArr: [{radius: 1, position: [0, 1, 0]}],
+      capsuleInfoArr: [{halfHeight: 0.5, radius: 0.5, position: [0, 1, 0]}],
       enabledRotations: [false, true, false],
     })
   }
@@ -124,7 +124,7 @@ export class Character {
     if (isJump && !this.isJumping) {
       this.isJumping = true
       this.updateAnim('Jump')
-      this.rb.applyImpulse(Y_VEC3.clone().multiplyScalar(30), true)
+      this.rb.applyImpulse(Y_VEC3.clone().multiplyScalar(7), true)
 
       setTimeout(() => {
         this.isJumping = false

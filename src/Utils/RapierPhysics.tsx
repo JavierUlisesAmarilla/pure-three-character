@@ -12,6 +12,12 @@ type BallInfoType = {
   position: number[];
 };
 
+type CapsuleInfoType = {
+  halfHeight: number;
+  radius: number;
+  position: number[];
+};
+
 export class RapierPhysics {
   rapierWorld: RAPIER.World
   rb2object3d: Map<number, THREE.Object3D>
@@ -119,6 +125,39 @@ export class RapierPhysics {
           ballInfo.position[0],
           ballInfo.position[1],
           ballInfo.position[2],
+      )
+      this.rapierWorld.createCollider(colliderDesc, body)
+    })
+
+    this.rbToObject3d(body, object3d)
+    return body
+  }
+
+  createCapsulesRigidBody({
+    descriptor = 'dynamic',
+    position = [0, 0, 0],
+    enabledRotations,
+    object3d,
+    capsuleInfoArr,
+  }: {
+    descriptor?: DescriptorType;
+    position?: number[];
+    enabledRotations?: boolean[];
+    object3d: THREE.Object3D;
+    capsuleInfoArr: Array<CapsuleInfoType>;
+  }) {
+    const body = this.createRigidBody({
+      descriptor,
+      position,
+      enabledRotations,
+    })
+
+    capsuleInfoArr.forEach((capsuleInfo) => {
+      const colliderDesc = RAPIER.ColliderDesc.capsule(capsuleInfo.halfHeight, capsuleInfo.radius)
+      colliderDesc.setTranslation(
+          capsuleInfo.position[0],
+          capsuleInfo.position[1],
+          capsuleInfo.position[2],
       )
       this.rapierWorld.createCollider(colliderDesc, body)
     })
