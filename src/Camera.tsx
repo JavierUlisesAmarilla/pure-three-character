@@ -1,9 +1,21 @@
-import {PerspectiveCamera} from 'three'
+import {PerspectiveCamera, Quaternion, Vector3} from 'three'
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
 import {Experience} from './Experience'
-import {IS_ORBIT_CONTROLS_USED} from './constants'
+import {
+  BACK_DIRECTION_VEC3,
+  CAMERA_OFFSET,
+  FRONT_DIRECTION_VEC3,
+  IS_ORBIT_CONTROLS_USED,
+  LEFT_DIRECTION_VEC3,
+  LERP_ALPHA,
+  RIGHT_DIRECTION_VEC3,
+  Y_VEC3,
+} from './constants'
 
-const limitMovement = 200
+const limitMovement = 300
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- TODO
+const localQuat = new Quaternion()
+const localVec3 = new Vector3()
 
 export class Camera {
   instance?: PerspectiveCamera
@@ -20,7 +32,7 @@ export class Camera {
     this.size = experience.size
     this.scene = experience.scene
     this.characterRb = experience.world?.character.rb
-    this.cameraRotY = 0
+    this.cameraRotY = Math.PI
     this.initInstance()
     this.initControls()
     this.initEvents()
@@ -81,6 +93,34 @@ export class Camera {
   }
 
   update() {
-    // TODO
+    if (!IS_ORBIT_CONTROLS_USED && this.instance && this.characterRb) {
+      const characterRbTranslation = this.characterRb.translation()
+      const characterRbPos = new Vector3(
+          characterRbTranslation.x,
+          characterRbTranslation.y,
+          characterRbTranslation.z,
+      )
+      this.instance.position.lerp(characterRbPos, LERP_ALPHA)
+      this.instance.quaternion.setFromAxisAngle(Y_VEC3, this.cameraRotY)
+      this.instance.position.add(
+          localVec3
+              .copy(CAMERA_OFFSET.clone().multiplyScalar(LERP_ALPHA))
+              .applyQuaternion(this.instance.quaternion),
+      )
+
+      const frontDirectionVec3 = characterRbPos
+          .sub(this.instance.position)
+          .setY(0)
+          .normalize()
+      const backDirectionVec3 = frontDirectionVec3.clone().negate()
+      const leftDirectionVec3 = frontDirectionVec3
+          .clone()
+          .applyAxisAngle(Y_VEC3, Math.PI / 2)
+      const rightDirectionVec3 = leftDirectionVec3.clone().negate()
+      FRONT_DIRECTION_VEC3.copy(frontDirectionVec3)
+      BACK_DIRECTION_VEC3.copy(backDirectionVec3)
+      LEFT_DIRECTION_VEC3.copy(leftDirectionVec3)
+      RIGHT_DIRECTION_VEC3.copy(rightDirectionVec3)
+    }
   }
 }
