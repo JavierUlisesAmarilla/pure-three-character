@@ -79,4 +79,8 @@ export class Camera {
     this.instance.aspect = this.size.width / this.size.height
     this.instance.updateProjectionMatrix()
   }
+
+  update() {
+    // TODO
+  }
 }

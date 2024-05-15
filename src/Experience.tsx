@@ -67,14 +67,9 @@ export class Experience {
   }
 
   update() {
-    if (this.renderer) {
-      this.renderer.update()
-    }
-    if (this.rapierPhysics) {
-      this.rapierPhysics.update(IS_DEV_MODE)
-    }
-    if (this.world) {
-      this.world.update()
-    }
+    this.rapierPhysics?.update(IS_DEV_MODE)
+    this.world?.update()
+    this.camera?.update()
+    this.renderer?.update()
   }
 }
