@@ -5,6 +5,7 @@ import {Experience} from '../Experience'
 export class Character {
   scene
   time
+  rapierPhysics
   model: GLTF
   animMixer
   animActions: Map<string, AnimationAction>
@@ -13,6 +14,7 @@ export class Character {
     const experience = new Experience()
     this.scene = experience.scene
     this.time = experience.time
+    this.rapierPhysics = experience.rapierPhysics
     this.model = experience.loaders?.items.characterModel
     this.animMixer = new AnimationMixer(this.model.scene)
     this.animActions = new Map()
@@ -21,10 +23,18 @@ export class Character {
   }
 
   initModel() {
-    if (!this.scene || !this.model) {
+    if (!this.scene || !this.model || !this.rapierPhysics) {
       return
     }
     this.scene.add(this.model.scene)
+    this.rapierPhysics.createBallsRigidBody({
+      object3d: this.model.scene,
+      ballInfoArr: [
+        {radius: 0.5, position: [0, 0.5, 0], scale: 1},
+        {radius: 0.5, position: [0, 1.5, 0], scale: 1},
+      ],
+      enabledRotations: [false, true, false],
+    })
   }
 
   initAnim() {

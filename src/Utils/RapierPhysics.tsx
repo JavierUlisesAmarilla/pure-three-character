@@ -7,6 +7,12 @@ type DescriptorType =
   | 'kinematicVelocityBased'
   | 'fixed';
 
+type BallInfoType = {
+  radius: number;
+  position: number[];
+  scale: number;
+};
+
 export class RapierPhysics {
   rapierWorld: RAPIER.World
   rb2object3d: Map<number, THREE.Object3D>
@@ -35,11 +41,13 @@ export class RapierPhysics {
     scale = 1,
     position = [0, 0, 0],
     descriptor = 'dynamic',
+    enabledRotations,
   }: {
     mesh: THREE.Mesh;
     scale?: number;
     position?: number[];
     descriptor?: DescriptorType;
+    enabledRotations?: boolean[];
   }) {
     mesh.scale.set(scale, scale, scale)
     const geometry = mesh.geometry
@@ -56,7 +64,56 @@ export class RapierPhysics {
       geometry.index.array as Uint32Array,
     )
     this.rapierWorld.createCollider(colliderDesc, body)
+
+    if (enabledRotations && enabledRotations.length >= 3) {
+      body.setEnabledRotations(
+          enabledRotations[0],
+          enabledRotations[1],
+          enabledRotations[2],
+          true,
+      )
+    }
+
     this.addRigidBody(body, mesh)
+  }
+
+  createBallsRigidBody({
+    object3d,
+    position = [0, 0, 0],
+    ballInfoArr,
+    descriptor = 'dynamic',
+    enabledRotations,
+  }: {
+    object3d: THREE.Object3D;
+    position?: number[];
+    ballInfoArr: Array<BallInfoType>;
+    descriptor?: DescriptorType;
+    enabledRotations?: boolean[];
+  }) {
+    const bodyDesc = getRigidBodyDesc(descriptor)
+    bodyDesc.setTranslation(position[0], position[1], position[2])
+    const body = this.rapierWorld.createRigidBody(bodyDesc)
+
+    ballInfoArr.forEach((ballInfo) => {
+      const colliderDesc = RAPIER.ColliderDesc.ball(ballInfo.radius)
+      colliderDesc.setTranslation(
+          ballInfo.position[0],
+          ballInfo.position[1],
+          ballInfo.position[2],
+      )
+      this.rapierWorld.createCollider(colliderDesc, body)
+    })
+
+    if (enabledRotations && enabledRotations.length >= 3) {
+      body.setEnabledRotations(
+          enabledRotations[0],
+          enabledRotations[1],
+          enabledRotations[2],
+          true,
+      )
+    }
+
+    this.addRigidBody(body, object3d)
   }
 
   addRigidBody(rb: RAPIER.RigidBody, object3d: THREE.Object3D) {
