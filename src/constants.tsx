@@ -18,3 +18,4 @@ export const assetArr: AssetType[] = [
 export const LIGHT_COLOR = '#FFF'
 export const LIGHT_INTENSITY = 0.2
 export const AXES_LENGTH = 10
+export const IS_ORBIT_CONTROLS_USED = true

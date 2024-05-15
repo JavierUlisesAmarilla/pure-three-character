@@ -6,7 +6,7 @@ export class Renderer {
   size
   scene
   camera
-  instance!: WebGLRenderer
+  instance?: WebGLRenderer
 
   constructor() {
     const experience = new Experience()
@@ -31,7 +31,7 @@ export class Renderer {
   }
 
   resize() {
-    if (!this.size) {
+    if (!this.size || !this.instance) {
       return
     }
     this.instance.setSize(this.size.width, this.size.height)
@@ -39,7 +39,7 @@ export class Renderer {
   }
 
   update() {
-    if (!this.scene || !this.camera) {
+    if (!this.scene || !this.camera?.instance || !this.instance) {
       return
     }
     this.instance.render(this.scene, this.camera.instance)

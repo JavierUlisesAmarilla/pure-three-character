@@ -10,7 +10,7 @@ export class Character {
   model: GLTF
   animMixer
   animActions: Map<string, AnimationAction>
-  rb!: RAPIER.RigidBody
+  rb?: RAPIER.RigidBody
 
   constructor() {
     const experience = new Experience()

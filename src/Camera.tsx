@@ -1,13 +1,14 @@
 import {PerspectiveCamera} from 'three'
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
 import {Experience} from './Experience'
+import {IS_ORBIT_CONTROLS_USED} from './constants'
 
 export class Camera {
-  instance!: PerspectiveCamera
+  instance?: PerspectiveCamera
   size
   scene
   canvas
-  controls!: OrbitControls
+  controls?: OrbitControls
 
   constructor() {
     const experience = new Experience()
@@ -16,6 +17,7 @@ export class Camera {
     this.canvas = experience.canvas
     this.initInstance()
     this.initControls()
+    this.initEvents()
   }
 
   initInstance() {
@@ -28,23 +30,30 @@ export class Camera {
         0.1,
         2000,
     )
-    this.instance.position.set(0, 3, -3)
+    this.instance.position.set(0, 2, -3)
+    this.instance.rotation.set(0, Math.PI, 0)
     this.scene.add(this.instance)
   }
 
   initControls() {
-    this.controls = new OrbitControls(this.instance, this.canvas)
+    if (this.instance && IS_ORBIT_CONTROLS_USED) {
+      this.controls = new OrbitControls(this.instance, this.canvas)
+    }
+  }
+
+  initEvents() {
+    if (!IS_ORBIT_CONTROLS_USED) {
+      document.addEventListener('mousedown', () => {
+        document.body.requestPointerLock()
+      })
+    }
   }
 
   resize() {
-    if (!this.size) {
+    if (!this.size || !this.instance) {
       return
     }
     this.instance.aspect = this.size.width / this.size.height
     this.instance.updateProjectionMatrix()
-  }
-
-  update() {
-    this.controls.update()
   }
 }

@@ -13,7 +13,7 @@ import {AXES_LENGTH, IS_DEV_MODE, assetArr} from './constants'
 let instance: Experience
 
 export class Experience {
-  canvas!: HTMLCanvasElement
+  canvas?: HTMLCanvasElement
   loaders
   size
   time
@@ -65,9 +65,6 @@ export class Experience {
   }
 
   update() {
-    if (this.camera) {
-      this.camera.update()
-    }
     if (this.renderer) {
       this.renderer.update()
     }

@@ -3,8 +3,8 @@ import {Character} from './Character'
 import {Ground} from './Ground'
 
 export class World {
-  ground!: Ground
-  character!: Character
+  ground?: Ground
+  character?: Character
 
   constructor() {
     const experience = new Experience()
@@ -16,7 +16,7 @@ export class World {
   }
 
   update() {
-    if (this.ground) {
+    if (this.character) {
       this.character.update()
     }
   }
