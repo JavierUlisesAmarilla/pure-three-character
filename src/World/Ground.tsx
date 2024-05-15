@@ -5,7 +5,7 @@ import {mergeModelMeshes} from '../common'
 export class Ground {
   scene
   time
-  model: GLTF
+  model?: GLTF
   rapierPhysics
 
   constructor() {

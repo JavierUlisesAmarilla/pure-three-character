@@ -8,7 +8,7 @@ export class Character {
   time
   rapierPhysics
   model: GLTF
-  animMixer
+  animMixer: AnimationMixer
   animActions: Map<string, AnimationAction>
   rb?: RAPIER.RigidBody
 
@@ -17,9 +17,9 @@ export class Character {
     this.scene = experience.scene
     this.time = experience.time
     this.rapierPhysics = experience.rapierPhysics
+    this.animActions = new Map()
     this.model = experience.loaders?.items.characterModel
     this.animMixer = new AnimationMixer(this.model.scene)
-    this.animActions = new Map()
     this.initModel()
     this.initAnim()
   }
@@ -40,14 +40,16 @@ export class Character {
   }
 
   initAnim() {
-    this.model.animations.forEach((anim) => {
-      this.animActions.set(anim.name, this.animMixer.clipAction(anim))
+    this.model?.animations.forEach((anim) => {
+      if (this.animMixer) {
+        this.animActions.set(anim.name, this.animMixer.clipAction(anim))
+      }
     })
     this.animActions.get('Idle')?.play()
   }
 
   update() {
-    if (!this.time) {
+    if (!this.time || !this.animMixer) {
       return
     }
     this.animMixer.update(this.time.delta * 0.001)

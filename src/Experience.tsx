@@ -15,15 +15,15 @@ let instance: Experience
 export class Experience {
   canvas?: HTMLCanvasElement
   loaders
-  size
-  time
-  scene
-  camera
-  light
-  renderer
-  environment
-  rapierPhysics
-  world
+  size?: Size
+  time?: Time
+  scene?: Scene
+  camera?: Camera
+  light?: Light
+  renderer?: Renderer
+  environment?: Environment
+  rapierPhysics?: RapierPhysics
+  world?: World
 
   constructor(canvas: HTMLCanvasElement | undefined = undefined) {
     if (instance) {
@@ -35,23 +35,25 @@ export class Experience {
       this.canvas = canvas
     }
     this.loaders = new Loaders(assetArr)
-    this.size = new Size()
-    this.time = new Time()
-    this.scene = new Scene()
-    this.camera = new Camera()
-    this.light = new Light()
-    this.renderer = new Renderer()
-    this.environment = new Environment()
-    this.rapierPhysics = new RapierPhysics(this.scene)
-    this.world = new World()
-    if (IS_DEV_MODE) {
-      this.scene.add(new AxesHelper(AXES_LENGTH))
-    }
-    this.size.on('resize', () => {
-      this.resize()
-    })
-    this.time.on('tick', () => {
-      this.update()
+    this.loaders.on('ready', () => {
+      this.size = new Size()
+      this.time = new Time()
+      this.scene = new Scene()
+      this.camera = new Camera()
+      this.light = new Light()
+      this.renderer = new Renderer()
+      this.environment = new Environment()
+      this.rapierPhysics = new RapierPhysics(this.scene)
+      this.world = new World()
+      if (IS_DEV_MODE) {
+        this.scene.add(new AxesHelper(AXES_LENGTH))
+      }
+      this.size.on('resize', () => {
+        this.resize()
+      })
+      this.time.on('tick', () => {
+        this.update()
+      })
     })
   }
 
