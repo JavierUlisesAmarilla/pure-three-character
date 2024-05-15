@@ -36,34 +36,18 @@ export class RapierPhysics {
     }
   }
 
-  createTrimeshRigidBody({
-    mesh,
-    scale = 1,
-    position = [0, 0, 0],
+  createRigidBody({
     descriptor = 'dynamic',
+    position = [0, 0, 0],
     enabledRotations,
   }: {
-    mesh: THREE.Mesh;
-    scale?: number;
-    position?: number[];
     descriptor?: DescriptorType;
+    position?: number[];
     enabledRotations?: boolean[];
   }) {
-    mesh.scale.set(scale, scale, scale)
-    const geometry = mesh.geometry
-    if (!geometry.index) {
-      return
-    }
     const bodyDesc = getRigidBodyDesc(descriptor)
     bodyDesc.setTranslation(position[0], position[1], position[2])
     const body = this.rapierWorld.createRigidBody(bodyDesc)
-    const colliderDesc = RAPIER.ColliderDesc.trimesh(
-      geometry.attributes.position.array.map(
-          (value) => value * scale,
-      ) as Float32Array,
-      geometry.index.array as Uint32Array,
-    )
-    this.rapierWorld.createCollider(colliderDesc, body)
 
     if (enabledRotations && enabledRotations.length >= 3) {
       body.setEnabledRotations(
@@ -74,26 +58,61 @@ export class RapierPhysics {
       )
     }
 
-    this.addRigidBody(body, mesh)
+    return body
+  }
+
+  createTrimeshRigidBody({
+    descriptor = 'dynamic',
+    position = [0, 0, 0],
+    enabledRotations,
+    mesh,
+    scale = 1,
+  }: {
+    descriptor?: DescriptorType;
+    position?: number[];
+    enabledRotations?: boolean[];
+    mesh: THREE.Mesh;
+    scale?: number;
+  }) {
+    mesh.scale.set(scale, scale, scale)
+    const geometry = mesh.geometry
+    if (!geometry.index) {
+      return
+    }
+    const body = this.createRigidBody({
+      descriptor,
+      position,
+      enabledRotations,
+    })
+    const colliderDesc = RAPIER.ColliderDesc.trimesh(
+      geometry.attributes.position.array.map(
+          (value) => value * scale,
+      ) as Float32Array,
+      geometry.index.array as Uint32Array,
+    )
+    this.rapierWorld.createCollider(colliderDesc, body)
+    this.rbToObject3d(body, mesh)
     return body
   }
 
   createBallsRigidBody({
-    object3d,
-    position = [0, 0, 0],
-    ballInfoArr,
     descriptor = 'dynamic',
+    position = [0, 0, 0],
     enabledRotations,
+    object3d,
+    ballInfoArr,
   }: {
-    object3d: THREE.Object3D;
-    position?: number[];
-    ballInfoArr: Array<BallInfoType>;
     descriptor?: DescriptorType;
+    position?: number[];
     enabledRotations?: boolean[];
+    object3d: THREE.Object3D;
+    ballInfoArr: Array<BallInfoType>;
   }) {
-    const bodyDesc = getRigidBodyDesc(descriptor)
-    bodyDesc.setTranslation(position[0], position[1], position[2])
-    const body = this.rapierWorld.createRigidBody(bodyDesc)
+    const body = this.createRigidBody({
+      descriptor,
+      position,
+      enabledRotations,
+    })
 
     ballInfoArr.forEach((ballInfo) => {
       const colliderDesc = RAPIER.ColliderDesc.ball(ballInfo.radius)
@@ -105,20 +124,11 @@ export class RapierPhysics {
       this.rapierWorld.createCollider(colliderDesc, body)
     })
 
-    if (enabledRotations && enabledRotations.length >= 3) {
-      body.setEnabledRotations(
-          enabledRotations[0],
-          enabledRotations[1],
-          enabledRotations[2],
-          true,
-      )
-    }
-
-    this.addRigidBody(body, object3d)
+    this.rbToObject3d(body, object3d)
     return body
   }
 
-  addRigidBody(rb: RAPIER.RigidBody, object3d: THREE.Object3D) {
+  rbToObject3d(rb: RAPIER.RigidBody, object3d: THREE.Object3D) {
     this.rb2object3d.set(rb.handle, object3d)
     this.scene.add(object3d)
   }

@@ -2,7 +2,7 @@ import RAPIER from '@dimforge/rapier3d'
 import {AnimationAction, AnimationMixer, Object3D, Vector3} from 'three'
 import {GLTF} from 'three/examples/jsm/loaders/GLTFLoader'
 import {Experience} from '../Experience'
-import AnimController from '../Utils/animController'
+import AnimController from '../Utils/AnimController'
 import {
   BACK_DIRECTION_VEC3,
   FRONT_DIRECTION_VEC3,
