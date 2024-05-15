@@ -9,13 +9,13 @@ type DescriptorType =
 
 export class RapierPhysics {
   rapierWorld: RAPIER.World
-  rb2mesh: Map<number, THREE.Mesh>
+  rb2object3d: Map<number, THREE.Object3D>
   scene: THREE.Scene
   lines: THREE.LineSegments
 
   constructor(scene: THREE.Scene) {
     this.rapierWorld = new RAPIER.World(new RAPIER.Vector3(0.0, -9.81, 0.0))
-    this.rb2mesh = new Map()
+    this.rb2object3d = new Map()
     this.scene = scene
 
     // For the debug-renderer
@@ -59,9 +59,9 @@ export class RapierPhysics {
     this.addRigidBody(body, mesh)
   }
 
-  addRigidBody(rb: RAPIER.RigidBody, mesh: THREE.Mesh) {
-    this.rb2mesh.set(rb.handle, mesh)
-    this.scene.add(mesh)
+  addRigidBody(rb: RAPIER.RigidBody, object3d: THREE.Object3D) {
+    this.rb2object3d.set(rb.handle, object3d)
+    this.scene.add(object3d)
   }
 
   update(debugRender: boolean = false) {
@@ -85,12 +85,12 @@ export class RapierPhysics {
     this.rapierWorld.forEachRigidBody((elt) => {
       const translation = elt.translation()
       const rotation = elt.rotation()
-      const mesh = this.rb2mesh.get(elt.handle)
+      const object3d = this.rb2object3d.get(elt.handle)
 
-      if (mesh) {
-        mesh.position.set(translation.x, translation.y, translation.z)
-        mesh.quaternion.set(rotation.x, rotation.y, rotation.z, rotation.w)
-        mesh.updateMatrix()
+      if (object3d) {
+        object3d.position.set(translation.x, translation.y, translation.z)
+        object3d.quaternion.set(rotation.x, rotation.y, rotation.z, rotation.w)
+        object3d.updateMatrix()
       }
     })
   }
