@@ -6,6 +6,7 @@ import {Experience} from '../Experience'
 export class Character {
   scene
   time
+  keyboard
   rapierPhysics
   model: GLTF
   animMixer: AnimationMixer
@@ -16,6 +17,7 @@ export class Character {
     const experience = new Experience()
     this.scene = experience.scene
     this.time = experience.time
+    this.keyboard = experience.keyboard
     this.rapierPhysics = experience.rapierPhysics
     this.animActions = new Map()
     this.model = experience.loaders?.items.characterModel
@@ -49,9 +51,13 @@ export class Character {
   }
 
   update() {
-    if (!this.time || !this.animMixer) {
+    if (!this.time || !this.animMixer || !this.keyboard) {
       return
     }
     this.animMixer.update(this.time.delta * 0.001)
+
+    if (this.keyboard.isFront) {
+      console.log('isFront')
+    }
   }
 }

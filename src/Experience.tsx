@@ -3,6 +3,7 @@ import {Camera} from './Camera'
 import {Environment} from './Environment'
 import {Light} from './Light'
 import {Renderer} from './Renderer'
+import {Keyboard} from './Utils/Keyboard'
 import {Loaders} from './Utils/Loaders'
 import {RapierPhysics} from './Utils/RapierPhysics'
 import {Size} from './Utils/Size'
@@ -17,6 +18,7 @@ export class Experience {
   loaders
   size?: Size
   time?: Time
+  keyboard?: Keyboard
   scene?: Scene
   light?: Light
   environment?: Environment
@@ -38,6 +40,7 @@ export class Experience {
     this.loaders.on('ready', () => {
       this.size = new Size()
       this.time = new Time()
+      this.keyboard = new Keyboard()
       this.scene = new Scene()
       this.light = new Light()
       this.environment = new Environment()
