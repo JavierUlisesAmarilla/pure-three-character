@@ -209,9 +209,13 @@ export class RapierPhysics {
 const getRigidBodyDesc = ({
   descriptor,
   mass = 1,
+  linearDamping = 1,
+  angularDamping = 1,
 }: {
   descriptor: DescriptorType;
   mass?: number;
+  linearDamping?: number;
+  angularDamping?: number;
 }) => {
   let bodyDesc
 
@@ -231,5 +235,7 @@ const getRigidBodyDesc = ({
   }
 
   bodyDesc.mass = mass
+  bodyDesc.linearDamping = linearDamping
+  bodyDesc.angularDamping = angularDamping
   return bodyDesc
 }
