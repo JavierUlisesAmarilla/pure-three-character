@@ -14,6 +14,11 @@ export const assetArr: AssetType[] = [
     type: 'model',
     path: 'models/character/scene.gltf',
   },
+  {
+    name: 'roomModel',
+    type: 'model',
+    path: 'models/room.glb',
+  },
 ]
 
 export const LIGHT_COLOR = '#FFF'

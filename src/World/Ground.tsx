@@ -13,7 +13,9 @@ export class Ground {
     this.scene = experience.scene
     this.time = experience.time
     this.rapierPhysics = experience.rapierPhysics
-    this.model = experience.loaders?.items.groundModel
+    // For container.glb
+    // this.model = experience.loaders?.items.groundModel
+    this.model = experience.loaders?.items.roomModel
     this.initModel()
   }
 
@@ -22,10 +24,17 @@ export class Ground {
       return
     }
     const mesh = mergeModelMeshes(this.model.scene)
+    // For container.glb
+    // this.rapierPhysics.createTrimeshRigidBody({
+    //   mesh,
+    //   scale: 10,
+    //   position: [0, 6.5, 0],
+    //   descriptor: 'fixed',
+    // })
     this.rapierPhysics.createTrimeshRigidBody({
       mesh,
       scale: 10,
-      position: [0, 6.5, 0],
+      position: [0, 1, 1],
       descriptor: 'fixed',
     })
   }
