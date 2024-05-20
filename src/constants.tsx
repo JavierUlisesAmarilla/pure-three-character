@@ -5,19 +5,24 @@ export const IS_DEV_MODE = false
 
 export const assetArr: AssetType[] = [
   {
-    name: 'groundModel',
-    type: 'model',
-    path: 'models/container.glb',
-  },
-  {
     name: 'characterModel',
     type: 'model',
     path: 'models/character/scene.gltf',
   },
+  // {
+  //   name: 'groundModel',
+  //   type: 'model',
+  //   path: 'models/container.glb',
+  // },
+  // {
+  //   name: 'roomModel',
+  //   type: 'model',
+  //   path: 'models/room.glb',
+  // },
   {
-    name: 'roomModel',
+    name: 'capsuleModel',
     type: 'model',
-    path: 'models/room.glb',
+    path: 'models/space_capsule.glb',
   },
 ]
 

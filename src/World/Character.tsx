@@ -137,7 +137,7 @@ export class Character {
       (isFront !== isBack || isLeft !== isRight)
     ) {
       if (isFast) {
-        this.setDirection(this.walkSpeed * 2)
+        this.setDirection(this.walkSpeed * 3)
         if (!this.isJumping) {
           this.updateAnim('Run')
         }

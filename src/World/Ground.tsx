@@ -15,7 +15,9 @@ export class Ground {
     this.rapierPhysics = experience.rapierPhysics
     // For container.glb
     // this.model = experience.loaders?.items.groundModel
-    this.model = experience.loaders?.items.roomModel
+    // For room.glb
+    // this.model = experience.loaders?.items.roomModel
+    this.model = experience.loaders?.items.capsuleModel
     this.initModel()
   }
 
@@ -31,10 +33,17 @@ export class Ground {
     //   position: [0, 6.5, 0],
     //   descriptor: 'fixed',
     // })
+    // For room.glb
+    // this.rapierPhysics.createTrimeshRigidBody({
+    //   mesh,
+    //   scale: 10,
+    //   position: [0, 1, 1],
+    //   descriptor: 'fixed',
+    // })
     this.rapierPhysics.createTrimeshRigidBody({
       mesh,
-      scale: 10,
-      position: [0, 1, 1],
+      scale: 0.04,
+      position: [0, 0, -1],
       descriptor: 'fixed',
     })
   }
