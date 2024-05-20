@@ -1,4 +1,4 @@
-import RAPIER from '@dimforge/rapier3d'
+import RAPIER from '@dimforge/rapier3d-compat'
 import {AnimationAction, AnimationMixer, Object3D, Vector3} from 'three'
 import {GLTF} from 'three/examples/jsm/loaders/GLTFLoader'
 import {Experience} from '../Experience'

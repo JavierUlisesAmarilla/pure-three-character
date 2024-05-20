@@ -37,7 +37,7 @@ export class Experience {
       this.canvas = canvas
     }
     this.loaders = new Loaders(assetArr)
-    this.loaders.on('ready', () => {
+    this.loaders.on('ready', async () => {
       this.size = new Size()
       this.time = new Time()
       this.keyboard = new Keyboard()
@@ -45,6 +45,7 @@ export class Experience {
       this.light = new Light()
       this.environment = new Environment()
       this.rapierPhysics = new RapierPhysics(this.scene)
+      await this.rapierPhysics.init()
       this.world = new World()
       this.camera = new Camera()
       this.renderer = new Renderer()

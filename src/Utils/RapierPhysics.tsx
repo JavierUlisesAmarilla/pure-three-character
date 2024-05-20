@@ -1,4 +1,4 @@
-import RAPIER from '@dimforge/rapier3d'
+import RAPIER from '@dimforge/rapier3d-compat'
 import * as THREE from 'three'
 
 type DescriptorType =
@@ -19,13 +19,12 @@ type CapsuleInfoType = {
 };
 
 export class RapierPhysics {
-  rapierWorld: RAPIER.World
+  rapierWorld?: RAPIER.World
   rb2object3d: Map<number, THREE.Object3D>
   scene: THREE.Scene
   lines: THREE.LineSegments
 
   constructor(scene: THREE.Scene) {
-    this.rapierWorld = new RAPIER.World(new RAPIER.Vector3(0.0, -9.81, 0.0))
     this.rb2object3d = new Map()
     this.scene = scene
 
@@ -39,6 +38,11 @@ export class RapierPhysics {
       this.lines = new THREE.LineSegments(geometry, material)
       scene.add(this.lines)
     }
+  }
+
+  async init() {
+    await RAPIER.init()
+    this.rapierWorld = new RAPIER.World(new RAPIER.Vector3(0.0, -9.81, 0.0))
   }
 
   createRigidBody({
@@ -56,6 +60,9 @@ export class RapierPhysics {
     angularDamping?: number;
     position?: number[];
   }) {
+    if (!this.rapierWorld) {
+      return
+    }
     const bodyDesc = getRigidBodyDesc({
       descriptor,
       enabledRotations,
@@ -81,6 +88,9 @@ export class RapierPhysics {
     mesh: THREE.Mesh;
     scale?: number;
   }) {
+    if (!this.rapierWorld) {
+      return
+    }
     mesh.scale.set(scale, scale, scale)
     const geometry = mesh.geometry
     if (!geometry.index) {
@@ -91,6 +101,9 @@ export class RapierPhysics {
       position,
       enabledRotations,
     })
+    if (!body) {
+      return
+    }
     const colliderDesc = RAPIER.ColliderDesc.trimesh(
       geometry.attributes.position.array.map(
           (value) => value * scale,
@@ -120,8 +133,14 @@ export class RapierPhysics {
       position,
       enabledRotations,
     })
+    if (!body) {
+      return
+    }
 
     ballInfoArr.forEach((ballInfo) => {
+      if (!this.rapierWorld) {
+        return
+      }
       const colliderDesc = RAPIER.ColliderDesc.ball(ballInfo.radius)
       colliderDesc.setTranslation(
           ballInfo.position[0],
@@ -162,8 +181,14 @@ export class RapierPhysics {
       angularDamping,
       position,
     })
+    if (!body) {
+      return
+    }
 
     capsuleInfoArr.forEach((capsuleInfo) => {
+      if (!this.rapierWorld) {
+        return
+      }
       const colliderDesc = RAPIER.ColliderDesc.capsule(
           capsuleInfo.halfHeight,
           capsuleInfo.radius,
@@ -186,6 +211,10 @@ export class RapierPhysics {
   }
 
   update(debugRender: boolean = false) {
+    if (!this.rapierWorld) {
+      return
+    }
+
     if (debugRender) {
       const buffers = this.rapierWorld.debugRender()
       this.lines.visible = true
