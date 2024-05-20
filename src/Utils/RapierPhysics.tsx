@@ -50,7 +50,7 @@ export class RapierPhysics {
     position?: number[];
     enabledRotations?: boolean[];
   }) {
-    const bodyDesc = getRigidBodyDesc(descriptor)
+    const bodyDesc = getRigidBodyDesc({descriptor})
     bodyDesc.setTranslation(position[0], position[1], position[2])
     const body = this.rapierWorld.createRigidBody(bodyDesc)
 
@@ -153,7 +153,10 @@ export class RapierPhysics {
     })
 
     capsuleInfoArr.forEach((capsuleInfo) => {
-      const colliderDesc = RAPIER.ColliderDesc.capsule(capsuleInfo.halfHeight, capsuleInfo.radius)
+      const colliderDesc = RAPIER.ColliderDesc.capsule(
+          capsuleInfo.halfHeight,
+          capsuleInfo.radius,
+      )
       colliderDesc.setTranslation(
           capsuleInfo.position[0],
           capsuleInfo.position[1],
@@ -203,7 +206,13 @@ export class RapierPhysics {
   }
 }
 
-const getRigidBodyDesc = (descriptor: DescriptorType) => {
+const getRigidBodyDesc = ({
+  descriptor,
+  mass = 1,
+}: {
+  descriptor: DescriptorType;
+  mass?: number;
+}) => {
   let bodyDesc
 
   switch (descriptor) {
@@ -221,5 +230,6 @@ const getRigidBodyDesc = (descriptor: DescriptorType) => {
       break
   }
 
+  bodyDesc.mass = mass
   return bodyDesc
 }

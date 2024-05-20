@@ -124,7 +124,7 @@ export class Character {
     if (isJump && !this.isJumping) {
       this.isJumping = true
       this.updateAnim('Jump')
-      this.rb.applyImpulse(Y_VEC3.clone().multiplyScalar(7), true)
+      this.rb.applyImpulse(Y_VEC3.clone().multiplyScalar(15), true)
 
       setTimeout(() => {
         this.isJumping = false
