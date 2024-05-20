@@ -43,26 +43,28 @@ export class RapierPhysics {
 
   createRigidBody({
     descriptor = 'dynamic',
-    position = [0, 0, 0],
     enabledRotations,
+    mass,
+    linearDamping,
+    angularDamping,
+    position = [0, 0, 0],
   }: {
     descriptor?: DescriptorType;
-    position?: number[];
     enabledRotations?: boolean[];
+    mass?: number;
+    linearDamping?: number;
+    angularDamping?: number;
+    position?: number[];
   }) {
-    const bodyDesc = getRigidBodyDesc({descriptor})
+    const bodyDesc = getRigidBodyDesc({
+      descriptor,
+      enabledRotations,
+      mass,
+      linearDamping,
+      angularDamping,
+    })
     bodyDesc.setTranslation(position[0], position[1], position[2])
     const body = this.rapierWorld.createRigidBody(bodyDesc)
-
-    if (enabledRotations && enabledRotations.length >= 3) {
-      body.setEnabledRotations(
-          enabledRotations[0],
-          enabledRotations[1],
-          enabledRotations[2],
-          true,
-      )
-    }
-
     return body
   }
 
@@ -135,21 +137,30 @@ export class RapierPhysics {
 
   createCapsulesRigidBody({
     descriptor = 'dynamic',
-    position = [0, 0, 0],
     enabledRotations,
+    mass,
+    linearDamping,
+    angularDamping,
+    position = [0, 0, 0],
     object3d,
     capsuleInfoArr,
   }: {
     descriptor?: DescriptorType;
-    position?: number[];
     enabledRotations?: boolean[];
+    mass?: number;
+    linearDamping?: number;
+    angularDamping?: number;
+    position?: number[];
     object3d: THREE.Object3D;
     capsuleInfoArr: Array<CapsuleInfoType>;
   }) {
     const body = this.createRigidBody({
       descriptor,
-      position,
       enabledRotations,
+      mass,
+      linearDamping,
+      angularDamping,
+      position,
     })
 
     capsuleInfoArr.forEach((capsuleInfo) => {
@@ -208,11 +219,13 @@ export class RapierPhysics {
 
 const getRigidBodyDesc = ({
   descriptor,
+  enabledRotations,
   mass = 1,
   linearDamping = 1,
   angularDamping = 1,
 }: {
   descriptor: DescriptorType;
+  enabledRotations?: boolean[];
   mass?: number;
   linearDamping?: number;
   angularDamping?: number;
@@ -232,6 +245,14 @@ const getRigidBodyDesc = ({
     default:
       bodyDesc = RAPIER.RigidBodyDesc.dynamic()
       break
+  }
+
+  if (enabledRotations && enabledRotations.length >= 3) {
+    bodyDesc.enabledRotations(
+        enabledRotations[0],
+        enabledRotations[1],
+        enabledRotations[2],
+    )
   }
 
   bodyDesc.mass = mass
