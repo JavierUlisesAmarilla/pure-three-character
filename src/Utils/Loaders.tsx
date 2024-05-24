@@ -30,19 +30,23 @@ export class Loaders extends EventEmitter {
   }
 
   setLoaders() {
-    const loadingBar: HTMLElement | null =
-      document.querySelector('.loading-bar')
     const loadingLogo: HTMLElement | null =
       document.querySelector('.loading-logo')
-    if (!loadingBar || !loadingLogo) {
+    const loadingBarContainer: HTMLElement | null = document.querySelector(
+        '.loading-bar-container',
+    )
+    const loadingBar: HTMLElement | null =
+      document.querySelector('.loading-bar')
+    if (!loadingLogo || !loadingBarContainer || !loadingBar) {
       return
     }
     this.loaders = {}
     this.loaders.loadingManager = new LoadingManager(
         () => {
-          loadingBar.classList.add('ended')
-          loadingLogo.classList.add('ended')
-          loadingBar.style.transform = ''
+          setTimeout(() => {
+            loadingLogo.classList.add('ended')
+            loadingBarContainer.classList.add('ended')
+          }, 100)
         },
         (itemUrl, itemsLoaded, itemsTotal) => {
           const progressRatio = itemsLoaded / itemsTotal

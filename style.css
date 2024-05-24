@@ -5,6 +5,7 @@
 html,
 body {
   overflow: hidden;
+  background-color: black;
 }
 
 /* Canvas  */
@@ -14,38 +15,39 @@ body {
   top: 0;
   left: 0;
   outline: none;
-  z-index: 1;
 }
 
 /* Loading */
 
 .loading-logo {
   position: absolute;
-  top: 30%;
-  left: 45%;
-  width: 10%;
-  top: 30%;
-  z-index: 2;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 100%;
   cursor: wait;
 }
 .loading-logo.ended {
-  z-index: 0;
+  display: none;
 }
-.loading-bar {
+.loading-bar-container {
   position: absolute;
   left: 20%;
   width: 60%;
   top: 80%;
-  height: 3px;
+  height: 10px;
+  border-radius: 20px;
+  background: white;
+  cursor: wait;
+}
+.loading-bar-container.ended {
+  display: none;
+}
+.loading-bar {
+  width: 100%;
+  height: 100%;
   border-radius: 20px;
   background: #00ff00;
-  cursor: wait;
   transform: scaleX(0);
   transform-origin: top left;
-  z-index: 2;
-}
-.loading-bar.ended {
-  transform: scaleX(0);
-  transform-origin: 100% 0;
-  z-index: 0;
 }
