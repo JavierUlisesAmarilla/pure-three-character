@@ -19,35 +19,36 @@ body {
 
 /* Loading */
 
+.loading-container {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+}
+.loading-container.ended {
+  display: none;
+}
 .loading-logo {
   position: absolute;
   top: 0;
   left: 50%;
   transform: translateX(-50%);
   height: 100%;
-  cursor: wait;
-}
-.loading-logo.ended {
-  display: none;
 }
 .loading-bar-container {
   position: absolute;
   left: 20%;
   width: 60%;
-  top: 80%;
-  height: 10px;
-  border-radius: 20px;
+  bottom: 50px;
+  height: 4px;
+  border-radius: 9999px;
   background: white;
   cursor: wait;
-}
-.loading-bar-container.ended {
-  display: none;
 }
 .loading-bar {
   width: 100%;
   height: 100%;
-  border-radius: 20px;
-  background: #00ff00;
+  border-radius: 9999px;
+  background: lightskyblue;
   transform: scaleX(0);
   transform-origin: top left;
 }
