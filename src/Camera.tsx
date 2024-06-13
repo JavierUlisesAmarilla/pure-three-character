@@ -1,6 +1,15 @@
-import {Euler, PerspectiveCamera, Vector3} from 'three'
+import {
+  Euler,
+  Intersection,
+  Object3D,
+  PerspectiveCamera,
+  Raycaster,
+  Vector2,
+  Vector3,
+} from 'three'
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
 import {Experience} from './Experience'
+import {getChildMeshArr} from './common'
 import {
   BACK_DIRECTION_VEC3,
   CAMERA_OFFSET,
@@ -15,6 +24,8 @@ import {
 const limitMovement = 300
 const limitRotXFactor = 0.2
 const localVec3 = new Vector3()
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- TODO
+const zeroVec2 = new Vector2()
 
 export class Camera {
   instance?: PerspectiveCamera
@@ -24,6 +35,8 @@ export class Camera {
   characterRb
   cameraRotX
   cameraRotY
+  raycaster: Raycaster
+  raycasterMeshArr?: Object3D[]
   controls?: OrbitControls
 
   constructor() {
@@ -33,7 +46,8 @@ export class Camera {
     this.scene = experience.scene
     this.characterRb = experience.world?.character.rb
     this.cameraRotX = 0
-    this.cameraRotY = Math.PI
+    this.cameraRotY = 0
+    this.raycaster = new Raycaster()
     this.initInstance()
     this.initControls()
     this.initEvents()
@@ -52,6 +66,7 @@ export class Camera {
     this.instance.position.set(0, 2, -3)
     this.instance.rotation.set(0, Math.PI, 0)
     this.scene.add(this.instance)
+    this.raycasterMeshArr = getChildMeshArr(this.scene)
   }
 
   initControls() {
@@ -108,8 +123,24 @@ export class Camera {
     this.instance.updateProjectionMatrix()
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- TODO
+  computeCameraOffset(intersectArr: Intersection[]) {
+    //
+  }
+
   update() {
-    if (!IS_ORBIT_CONTROLS_USED && this.instance && this.characterRb) {
+    if (
+      !IS_ORBIT_CONTROLS_USED &&
+      this.instance &&
+      this.characterRb &&
+      this.raycaster &&
+      this.raycasterMeshArr
+    ) {
+      // this.raycaster.setFromCamera(zeroVec2, this.instance)
+      // const intersectArr = this.raycaster.intersectObjects(
+      //     this.raycasterMeshArr, false,
+      // )
+      // this.computeCameraOffset(intersectArr)
       const characterRbTranslation = this.characterRb.translation()
       const characterRbPos = new Vector3(
           characterRbTranslation.x,

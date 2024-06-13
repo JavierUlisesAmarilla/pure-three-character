@@ -1,4 +1,4 @@
-import {Group, Matrix4, Mesh} from 'three'
+import {BufferGeometry, Group, Matrix4, Mesh, Object3D, SkinnedMesh} from 'three'
 import {mergeBufferGeometries} from 'three/examples/jsm/utils/BufferGeometryUtils'
 
 export const mergeModelMeshes = (
@@ -6,22 +6,20 @@ export const mergeModelMeshes = (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO
     customMaterial: any = undefined,
 ) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO
-  const bufferGeometries: any[] = []
+  const bufferGeometries: BufferGeometry[] = []
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO
   const materials: any[] = []
   const matrix4 = new Matrix4()
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO
-  modelScene.traverse((child: any) => {
-    if (child.isMesh) {
-      if (child.geometry?.isBufferGeometry) {
+  modelScene.traverse((child) => {
+    if (child instanceof Mesh) {
+      if (child.geometry.isBufferGeometry) {
         matrix4.compose(child.position, child.quaternion, child.scale)
         child.geometry.applyMatrix4(matrix4)
         bufferGeometries.push(child.geometry)
       }
 
-      if (child.material?.isMaterial) {
+      if (child.material.isMaterial) {
         materials.push(child.material)
       }
     }
@@ -36,4 +34,14 @@ export const mergeModelMeshes = (
   mergedBufferGeometry.computeBoundingBox()
   const mergedMesh = new Mesh(mergedBufferGeometry, material)
   return mergedMesh
+}
+
+export const getChildMeshArr = (object: Object3D) => {
+  const childMeshArr: Object3D[] = []
+  object.traverse((child) => {
+    if (child instanceof Mesh && !(child instanceof SkinnedMesh)) {
+      childMeshArr.push(child)
+    }
+  })
+  return childMeshArr
 }

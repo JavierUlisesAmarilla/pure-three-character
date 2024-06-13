@@ -1,5 +1,12 @@
 import RAPIER from '@dimforge/rapier3d-compat'
-import {AnimationAction, AnimationMixer, Object3D, Vector3} from 'three'
+import {
+  AnimationAction,
+  AnimationMixer,
+  CapsuleGeometry,
+  Mesh,
+  Object3D,
+  Vector3,
+} from 'three'
 import {GLTF} from 'three/examples/jsm/loaders/GLTFLoader'
 import {Experience} from '../Experience'
 import AnimController from '../Utils/AnimController'
@@ -48,6 +55,11 @@ export class Character {
     }
     const object3d = new Object3D()
     object3d.add(this.model.scene)
+    const capsuleMesh = new Mesh(new CapsuleGeometry(0.5, 1))
+    capsuleMesh.position.y = 1
+    capsuleMesh.visible = false
+    capsuleMesh.name = 'character'
+    object3d.add(capsuleMesh)
     this.model.scene.rotation.set(0, Math.PI, 0)
     this.rb = this.rapierPhysics.createCapsulesRigidBody({
       object3d,
