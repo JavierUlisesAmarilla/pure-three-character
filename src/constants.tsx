@@ -9,16 +9,6 @@ export const assetArr: AssetType[] = [
     type: 'model',
     path: 'models/character/scene.gltf',
   },
-  // {
-  //   name: 'groundModel',
-  //   type: 'model',
-  //   path: 'models/container.glb',
-  // },
-  // {
-  //   name: 'roomModel',
-  //   type: 'model',
-  //   path: 'models/room.glb',
-  // },
   {
     name: 'capsuleModel',
     type: 'model',
