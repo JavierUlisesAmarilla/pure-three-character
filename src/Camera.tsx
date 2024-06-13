@@ -16,7 +16,6 @@ import {
   FRONT_DIRECTION_VEC3,
   IS_ORBIT_CONTROLS_USED,
   LEFT_DIRECTION_VEC3,
-  LERP_ALPHA,
   RIGHT_DIRECTION_VEC3,
   Y_VEC3,
 } from './constants'
@@ -147,14 +146,12 @@ export class Camera {
           characterRbTranslation.y,
           characterRbTranslation.z,
       )
-      this.instance.position.lerp(characterRbPos, LERP_ALPHA)
+      this.instance.position.copy(characterRbPos)
       this.instance.quaternion.setFromEuler(
           new Euler(this.cameraRotX, this.cameraRotY, 0, 'ZYX'),
       )
       this.instance.position.add(
-          localVec3
-              .copy(CAMERA_OFFSET.clone().multiplyScalar(LERP_ALPHA))
-              .applyQuaternion(this.instance.quaternion),
+          localVec3.copy(CAMERA_OFFSET).applyQuaternion(this.instance.quaternion),
       )
 
       const frontDirectionVec3 = characterRbPos
