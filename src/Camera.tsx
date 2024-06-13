@@ -21,7 +21,7 @@ import {
 } from './constants'
 
 const limitMovement = 300
-const limitRotXFactor = 0.2
+const limitRotXFactor = 0.1
 const localVec3 = new Vector3()
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- TODO
 const zeroVec2 = new Vector2()
@@ -100,7 +100,7 @@ export class Camera {
             movementY = -limitMovement
           }
           const rotYOffset = -movementX * Math.PI * 0.0001
-          const rotXOffset = -movementY * Math.PI * 0.00005
+          const rotXOffset = -movementY * Math.PI * 0.0001
           this.cameraRotY += rotYOffset
           const newRotX = this.cameraRotX + rotXOffset
           if (
