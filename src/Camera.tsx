@@ -1,4 +1,4 @@
-import {PerspectiveCamera, Quaternion, Vector3} from 'three'
+import {Euler, PerspectiveCamera, Vector3} from 'three'
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
 import {Experience} from './Experience'
 import {
@@ -13,8 +13,7 @@ import {
 } from './constants'
 
 const limitMovement = 300
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- TODO
-const localQuat = new Quaternion()
+const limitRotXFactor = 0.2
 const localVec3 = new Vector3()
 
 export class Camera {
@@ -23,6 +22,7 @@ export class Camera {
   size
   scene
   characterRb
+  cameraRotX
   cameraRotY
   controls?: OrbitControls
 
@@ -32,6 +32,7 @@ export class Camera {
     this.size = experience.size
     this.scene = experience.scene
     this.characterRb = experience.world?.character.rb
+    this.cameraRotX = 0
     this.cameraRotY = Math.PI
     this.initInstance()
     this.initControls()
@@ -71,14 +72,29 @@ export class Camera {
           this.instance &&
           this.characterRb
         ) {
-          let {movementX} = event
+          let {movementX, movementY} = event
           if (movementX > limitMovement) {
             movementX = limitMovement
           }
           if (movementX < -limitMovement) {
             movementX = -limitMovement
           }
-          this.cameraRotY -= movementX * Math.PI * 0.0001
+          if (movementY > limitMovement) {
+            movementY = limitMovement
+          }
+          if (movementY < -limitMovement) {
+            movementY = -limitMovement
+          }
+          const rotYOffset = -movementX * Math.PI * 0.0001
+          const rotXOffset = -movementY * Math.PI * 0.00005
+          this.cameraRotY += rotYOffset
+          const newRotX = this.cameraRotX + rotXOffset
+          if (
+            newRotX > -Math.PI * limitRotXFactor &&
+            newRotX < Math.PI * limitRotXFactor
+          ) {
+            this.cameraRotX = newRotX
+          }
         }
       })
     }
@@ -101,7 +117,9 @@ export class Camera {
           characterRbTranslation.z,
       )
       this.instance.position.lerp(characterRbPos, LERP_ALPHA)
-      this.instance.quaternion.setFromAxisAngle(Y_VEC3, this.cameraRotY)
+      this.instance.quaternion.setFromEuler(
+          new Euler(this.cameraRotX, this.cameraRotY, 0, 'ZYX'),
+      )
       this.instance.position.add(
           localVec3
               .copy(CAMERA_OFFSET.clone().multiplyScalar(LERP_ALPHA))
