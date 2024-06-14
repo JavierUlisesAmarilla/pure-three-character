@@ -6,7 +6,9 @@ import {AssetType} from '../../utils/types'
 import {EventEmitter} from './EventEmitter'
 
 export class Loaders extends EventEmitter {
-  assets: AssetType[]
+  assetArr: AssetType[]
+  loadingContainerDiv?: HTMLDivElement
+  loadingBarDiv?: HTMLDivElement
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO
   items: { [key: string]: any }
   toLoad: number
@@ -15,15 +17,25 @@ export class Loaders extends EventEmitter {
   loaders: any
   prevProgressRatio: number
 
-  constructor(assets: AssetType[]) {
+  constructor({
+    assetArr,
+    loadingContainerDiv,
+    loadingBarDiv,
+  }: {
+    assetArr: AssetType[];
+    loadingContainerDiv?: HTMLDivElement;
+    loadingBarDiv?: HTMLDivElement;
+  }) {
     super()
 
     // Options
-    this.assets = assets
+    this.assetArr = assetArr
+    this.loadingContainerDiv = loadingContainerDiv
+    this.loadingBarDiv = loadingBarDiv
 
     // Setup
     this.items = {}
-    this.toLoad = this.assets.length
+    this.toLoad = this.assetArr.length
     this.loaded = 0
     this.prevProgressRatio = 0
     this.setLoaders()
@@ -31,18 +43,13 @@ export class Loaders extends EventEmitter {
   }
 
   setLoaders() {
-    const loadingContainer: HTMLElement | null =
-      document.querySelector('.loading-container')
-    const loadingBar: HTMLElement | null =
-      document.querySelector('.loading-bar')
-    if (!loadingContainer || !loadingBar) {
-      return
-    }
     this.loaders = {}
     this.loaders.loadingManager = new LoadingManager(
         () => {
           setTimeout(() => {
-            loadingContainer.classList.add('ended')
+            if (this.loadingContainerDiv) {
+              this.loadingContainerDiv.style.display = 'none'
+            }
           }, 100)
         },
         (itemUrl, itemsLoaded, itemsTotal) => {
@@ -50,7 +57,9 @@ export class Loaders extends EventEmitter {
           if (this.prevProgressRatio < progressRatio) {
             this.prevProgressRatio = progressRatio
           }
-          loadingBar.style.transform = `scaleX(${this.prevProgressRatio})`
+          if (this.loadingBarDiv) {
+            this.loadingBarDiv.style.transform = `scaleX(${this.prevProgressRatio})`
+          }
         },
     )
     this.loaders.dracoLoader = new DRACOLoader(this.loaders.loadingManager)
@@ -61,7 +70,7 @@ export class Loaders extends EventEmitter {
   }
 
   startLoading() {
-    for (const asset of this.assets) {
+    for (const asset of this.assetArr) {
       if (asset.type === 'model') {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO
         this.loaders.gltfLoader.load(asset.path, (file: any) => {

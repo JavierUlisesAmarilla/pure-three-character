@@ -28,7 +28,11 @@ export class Experience {
   camera?: Camera
   renderer?: Renderer
 
-  constructor(params?: { canvas?: HTMLCanvasElement }) {
+  constructor(params?: {
+    canvas?: HTMLCanvasElement;
+    loadingContainerDiv?: HTMLDivElement;
+    loadingBarDiv?: HTMLDivElement;
+  }) {
     if (instance) {
       return instance
     }
@@ -38,7 +42,11 @@ export class Experience {
       return instance
     }
     this.canvas = params.canvas
-    this.loaders = new Loaders(assetArr)
+    this.loaders = new Loaders({
+      assetArr,
+      loadingContainerDiv: params.loadingContainerDiv,
+      loadingBarDiv: params.loadingBarDiv,
+    })
     this.loaders.on('ready', async () => {
       this.size = new Size()
       this.time = new Time()
