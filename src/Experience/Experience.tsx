@@ -28,15 +28,16 @@ export class Experience {
   camera?: Camera
   renderer?: Renderer
 
-  constructor(canvas: HTMLCanvasElement | undefined = undefined) {
+  constructor(params?: { canvas?: HTMLCanvasElement }) {
     if (instance) {
       return instance
     }
     // eslint-disable-next-line @typescript-eslint/no-this-alias -- TODO
     instance = this
-    if (canvas) {
-      this.canvas = canvas
+    if (!params?.canvas) {
+      return instance
     }
+    this.canvas = params.canvas
     this.loaders = new Loaders(assetArr)
     this.loaders.on('ready', async () => {
       this.size = new Size()

@@ -1,17 +1,19 @@
-import {useEffect} from 'react'
+import {useEffect, useRef} from 'react'
 
 import {Experience} from './Experience/Experience'
 
 export const App = () => {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+
   useEffect(() => {
-    new Experience(
-      document.querySelector('.three-canvas') as HTMLCanvasElement,
-    )
+    if (canvasRef.current) {
+      new Experience({canvas: canvasRef.current})
+    }
   }, [])
 
   return (
     <div className="fixed h-screen w-screen">
-      <canvas className="three-canvas fixed top-0 left-0 outline-none"/>
+      <canvas ref={canvasRef} className="fixed top-0 left-0 outline-none"/>
       <div className="loading-container">
         <img src="/me.jpg" className="loading-logo" alt=""/>
         <div className="loading-bar-container">
