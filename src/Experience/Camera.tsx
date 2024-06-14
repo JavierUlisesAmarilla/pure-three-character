@@ -8,7 +8,7 @@ import {
   Vector3,
 } from 'three'
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
-import {Experience} from './Experience'
+
 import {getChildMeshArr} from './common'
 import {
   BACK_DIRECTION_VEC3,
@@ -19,6 +19,7 @@ import {
   RIGHT_DIRECTION_VEC3,
   Y_VEC3,
 } from './constants'
+import {Experience} from './Experience'
 
 const limitMovement = 30
 const limitRotXFactor = 0.1
