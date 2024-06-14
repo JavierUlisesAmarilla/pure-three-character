@@ -1,7 +1,7 @@
 import {AxesHelper, Scene} from 'three'
 
+import {assetArr, AXES_LENGTH, IS_DEV_MODE} from '../utils/constants'
 import {Camera} from './Camera'
-import {assetArr, AXES_LENGTH, IS_DEV_MODE} from './constants'
 import {Environment} from './Environment'
 import {Light} from './Light'
 import {Renderer} from './Renderer'

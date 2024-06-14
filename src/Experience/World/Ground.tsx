@@ -1,6 +1,6 @@
 import {GLTF} from 'three/examples/jsm/loaders/GLTFLoader'
 
-import {mergeModelMeshes} from '../common'
+import {mergeModelMeshes} from '../../utils/common'
 import {Experience} from '../Experience'
 
 export class Ground {

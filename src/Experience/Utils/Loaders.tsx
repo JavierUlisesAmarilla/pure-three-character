@@ -2,7 +2,7 @@ import {LoadingManager, TextureLoader} from 'three'
 import {DRACOLoader} from 'three/examples/jsm/loaders/DRACOLoader'
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader'
 
-import {AssetType} from '../types'
+import {AssetType} from '../../utils/types'
 import {EventEmitter} from './EventEmitter'
 
 export class Loaders extends EventEmitter {

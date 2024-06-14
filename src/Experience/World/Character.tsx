@@ -15,7 +15,7 @@ import {
   LEFT_DIRECTION_VEC3,
   RIGHT_DIRECTION_VEC3,
   Y_VEC3,
-} from '../constants'
+} from '../../utils/constants'
 import {Experience} from '../Experience'
 import AnimController from '../Utils/AnimController'
 

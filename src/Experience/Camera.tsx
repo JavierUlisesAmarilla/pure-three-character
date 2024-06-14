@@ -9,7 +9,7 @@ import {
 } from 'three'
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
 
-import {getChildMeshArr} from './common'
+import {getChildMeshArr} from '../utils/common'
 import {
   BACK_DIRECTION_VEC3,
   CAMERA_OFFSET,
@@ -18,7 +18,7 @@ import {
   LEFT_DIRECTION_VEC3,
   RIGHT_DIRECTION_VEC3,
   Y_VEC3,
-} from './constants'
+} from '../utils/constants'
 import {Experience} from './Experience'
 
 const limitMovement = 30
