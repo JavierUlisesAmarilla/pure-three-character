@@ -1,6 +1,7 @@
 import {DirectionalLight, PointLight} from 'three'
-import {Experience} from './Experience'
+
 import {LIGHT_COLOR, LIGHT_INTENSITY} from './constants'
+import {Experience} from './Experience'
 
 export class Light {
   scene

@@ -4,7 +4,6 @@ import {Experience} from './Experience/Experience'
 
 export const App = () => {
   useEffect(() => {
-    console.log('test:', document.querySelector('.three-canvas'))
     new Experience(
       document.querySelector('.three-canvas') as HTMLCanvasElement,
     )

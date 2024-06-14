@@ -8,8 +8,7 @@ import {
   Vector3,
 } from 'three'
 import {GLTF} from 'three/examples/jsm/loaders/GLTFLoader'
-import {Experience} from '../Experience'
-import AnimController from '../Utils/AnimController'
+
 import {
   BACK_DIRECTION_VEC3,
   FRONT_DIRECTION_VEC3,
@@ -17,6 +16,8 @@ import {
   RIGHT_DIRECTION_VEC3,
   Y_VEC3,
 } from '../constants'
+import {Experience} from '../Experience'
+import AnimController from '../Utils/AnimController'
 
 export class Character {
   scene

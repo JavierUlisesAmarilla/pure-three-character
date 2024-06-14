@@ -1,4 +1,5 @@
 import {AnimationAction, AnimationMixer} from 'three'
+
 import {AnimationActionMap, AnimationMixerEvent} from '../types'
 
 export default class AnimController {

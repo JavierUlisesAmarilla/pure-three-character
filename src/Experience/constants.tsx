@@ -1,4 +1,5 @@
 import {Vector3} from 'three'
+
 import {AssetType} from './types'
 
 export const IS_DEV_MODE = false

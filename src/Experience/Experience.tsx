@@ -1,5 +1,7 @@
 import {AxesHelper, Scene} from 'three'
+
 import {Camera} from './Camera'
+import {assetArr, AXES_LENGTH, IS_DEV_MODE} from './constants'
 import {Environment} from './Environment'
 import {Light} from './Light'
 import {Renderer} from './Renderer'
@@ -9,7 +11,6 @@ import {RapierPhysics} from './Utils/RapierPhysics'
 import {Size} from './Utils/Size'
 import {Time} from './Utils/Time'
 import {World} from './World/World'
-import {AXES_LENGTH, IS_DEV_MODE, assetArr} from './constants'
 
 let instance: Experience
 
