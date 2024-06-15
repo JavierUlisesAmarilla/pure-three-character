@@ -76,8 +76,8 @@ export class Camera {
   }
 
   initEvents() {
-    if (!IS_ORBIT_CONTROLS_USED) {
-      document.addEventListener('mousedown', () => {
+    if (this.canvas && !IS_ORBIT_CONTROLS_USED) {
+      this.canvas.addEventListener('mousedown', () => {
         document.body.requestPointerLock()
       })
 

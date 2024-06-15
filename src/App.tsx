@@ -1,5 +1,6 @@
 import {useEffect, useRef} from 'react'
 
+import {Progress} from './components/Progress'
 import {Experience} from './Experience/Experience'
 
 export const App = () => {
@@ -15,7 +16,7 @@ export const App = () => {
     ) {
       new Experience({
         canvas: canvasRef.current,
-        loadingContainerDiv: loadingContainerRef.current,
+        // loadingContainerDiv: loadingContainerRef.current,
         loadingBarDiv: loadingBarRef.current,
       })
     }
@@ -24,18 +25,17 @@ export const App = () => {
   return (
     <div className="fixed h-screen w-screen">
       <canvas ref={canvasRef} className="fixed top-0 left-0 outline-none"/>
-      <div ref={loadingContainerRef} className="absolute h-full w-full">
-        <img
-          src="/me.jpg"
-          className="absolute top-0 left-1/2 h-full -translate-x-1/2"
-          alt=""
-        />
-        <div className="absolute left-1/4 bottom-4 h-1 w-1/2 cursor-wait rounded-full bg-white">
-          <div
-            ref={loadingBarRef}
-            className="h-full w-full origin-top-left scale-0 rounded-full bg-blue-500"
-          />
+      <div
+        ref={loadingContainerRef}
+        className="absolute flex h-full w-full bg-gradient-to-br from-purple-500 to-indigo-500 p-4"
+      >
+        <div>
+          <img src="/me.jpg" className="w-60 rounded-xl" alt=""/>
         </div>
+        <Progress
+          progressBarRef={loadingBarRef}
+          className="absolute left-1/4 bottom-4 w-1/2 cursor-wait"
+        />
       </div>
     </div>
   )
