@@ -24,16 +24,6 @@ export const App = () => {
         <div className="absolute flex h-full w-full flex-col items-center gap-8 overflow-auto bg-gradient-to-br from-purple-500 to-indigo-500 p-12 lg:flex-row lg:items-start">
           <div className="flex flex-col items-center gap-8">
             <img src="/me.jpg" className="w-full rounded-xl shadow-xl" alt=""/>
-            {progress < 1 ? (
-              <Progress progress={progress}/>
-            ) : (
-              <div
-                className="w-fit cursor-pointer rounded-full bg-yellow-500 px-3 py-1"
-                onClick={() => setHideLoader(true)}
-              >
-                Projects
-              </div>
-            )}
           </div>
           <div className="flex flex-col gap-8 text-xl">
             <div>
@@ -52,6 +42,16 @@ export const App = () => {
               My experience can be useful to guarantee that your project will be
               unique and have a lasting impact on your users.
             </div>
+            {progress < 1 ? (
+              <Progress progress={progress}/>
+            ) : (
+              <div
+                className="w-fit cursor-pointer rounded-full bg-yellow-500 px-3 py-1"
+                onClick={() => setHideLoader(true)}
+              >
+                Projects
+              </div>
+            )}
           </div>
         </div>
       )}
