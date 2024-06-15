@@ -1,12 +1,11 @@
 import classNames from 'classnames'
-import {LegacyRef} from 'react'
 
 export const Progress = ({
-  progressBarRef,
   className,
+  progress,
 }: {
-  progressBarRef?: LegacyRef<HTMLDivElement>;
   className?: string;
+  progress?: number;
 }) => {
   return (
     <div
@@ -17,8 +16,8 @@ export const Progress = ({
       )}
     >
       <div
-        ref={progressBarRef}
         className="h-full w-full origin-top-left scale-0 rounded-full bg-yellow-500"
+        style={{transform: `scaleX(${progress})`}}
       />
     </div>
   )

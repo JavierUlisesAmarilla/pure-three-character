@@ -7,8 +7,7 @@ import {EventEmitter} from './EventEmitter'
 
 export class Loaders extends EventEmitter {
   assetArr: AssetType[]
-  loadingContainerDiv?: HTMLDivElement
-  loadingBarDiv?: HTMLDivElement
+  onProgress?: { (progress: number): void }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO
   items: { [key: string]: any }
   toLoad: number
@@ -19,19 +18,16 @@ export class Loaders extends EventEmitter {
 
   constructor({
     assetArr,
-    loadingContainerDiv,
-    loadingBarDiv,
+    onProgress,
   }: {
     assetArr: AssetType[];
-    loadingContainerDiv?: HTMLDivElement;
-    loadingBarDiv?: HTMLDivElement;
+    onProgress?: { (progress: number): void };
   }) {
     super()
 
     // Options
     this.assetArr = assetArr
-    this.loadingContainerDiv = loadingContainerDiv
-    this.loadingBarDiv = loadingBarDiv
+    this.onProgress = onProgress
 
     // Setup
     this.items = {}
@@ -45,21 +41,13 @@ export class Loaders extends EventEmitter {
   setLoaders() {
     this.loaders = {}
     this.loaders.loadingManager = new LoadingManager(
-        () => {
-          setTimeout(() => {
-            if (this.loadingContainerDiv) {
-              this.loadingContainerDiv.style.display = 'none'
-            }
-          }, 100)
-        },
+        undefined,
         (itemUrl, itemsLoaded, itemsTotal) => {
           const progressRatio = itemsLoaded / itemsTotal
           if (this.prevProgressRatio < progressRatio) {
             this.prevProgressRatio = progressRatio
           }
-          if (this.loadingBarDiv) {
-            this.loadingBarDiv.style.transform = `scaleX(${this.prevProgressRatio})`
-          }
+          this.onProgress?.(progressRatio)
         },
     )
     this.loaders.dracoLoader = new DRACOLoader(this.loaders.loadingManager)

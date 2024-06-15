@@ -30,8 +30,7 @@ export class Experience {
 
   constructor(params?: {
     canvas?: HTMLCanvasElement;
-    loadingContainerDiv?: HTMLDivElement;
-    loadingBarDiv?: HTMLDivElement;
+    onProgress?: { (progress: number): void };
   }) {
     if (instance) {
       return instance
@@ -44,8 +43,7 @@ export class Experience {
     this.canvas = params.canvas
     this.loaders = new Loaders({
       assetArr,
-      loadingContainerDiv: params.loadingContainerDiv,
-      loadingBarDiv: params.loadingBarDiv,
+      onProgress: params.onProgress,
     })
     this.loaders.on('ready', async () => {
       this.size = new Size()

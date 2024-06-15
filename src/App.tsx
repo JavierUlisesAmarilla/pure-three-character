@@ -1,42 +1,60 @@
-import {useEffect, useRef} from 'react'
+import {useEffect, useRef, useState} from 'react'
 
 import {Progress} from './components/Progress'
 import {Experience} from './Experience/Experience'
 
 export const App = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const loadingContainerRef = useRef<HTMLDivElement>(null)
-  const loadingBarRef = useRef<HTMLDivElement>(null)
+  const [progress, setProgress] = useState(0)
+  const [hideLoader, setHideLoader] = useState(false)
 
   useEffect(() => {
-    if (
-      canvasRef.current &&
-      loadingContainerRef.current &&
-      loadingBarRef.current
-    ) {
+    if (canvasRef.current) {
       new Experience({
         canvas: canvasRef.current,
-        // loadingContainerDiv: loadingContainerRef.current,
-        loadingBarDiv: loadingBarRef.current,
+        onProgress: setProgress,
       })
     }
   }, [])
 
   return (
-    <div className="fixed h-screen w-screen">
+    <div className="fixed h-screen w-screen font-[Cascade] text-white">
       <canvas ref={canvasRef} className="fixed top-0 left-0 outline-none"/>
-      <div
-        ref={loadingContainerRef}
-        className="absolute flex h-full w-full bg-gradient-to-br from-purple-500 to-indigo-500 p-4"
-      >
-        <div>
-          <img src="/me.jpg" className="w-60 rounded-xl" alt=""/>
+      {!hideLoader && (
+        <div className="absolute flex h-full w-full flex-col items-center gap-8 overflow-auto bg-gradient-to-br from-purple-500 to-indigo-500 p-12 lg:flex-row lg:items-start">
+          <div className="flex flex-col items-center gap-8">
+            <img src="/me.jpg" className="w-full rounded-xl shadow-xl" alt=""/>
+            {progress < 1 ? (
+              <Progress progress={progress}/>
+            ) : (
+              <div
+                className="w-fit cursor-pointer rounded-full bg-yellow-500 px-3 py-1"
+                onClick={() => setHideLoader(true)}
+              >
+                Projects
+              </div>
+            )}
+          </div>
+          <div className="flex flex-col gap-8 text-xl">
+            <div>
+              Three.js and other WebGL technology expert with a strong passion
+              for performance optimization and post-processing effects.
+            </div>
+            <div>
+              Even for high complex projects, I always make sure that technology
+              does not prevent them from looking awesome.
+            </div>
+            <div>
+              I pay attention to your vision sincerely and implement it with
+              efficiency and speed.
+            </div>
+            <div>
+              My experience can be useful to guarantee that your project will be
+              unique and have a lasting impact on your users.
+            </div>
+          </div>
         </div>
-        <Progress
-          progressBarRef={loadingBarRef}
-          className="absolute left-1/4 bottom-4 w-1/2 cursor-wait"
-        />
-      </div>
+      )}
     </div>
   )
 }
