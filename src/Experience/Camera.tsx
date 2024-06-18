@@ -21,7 +21,7 @@ import {
 } from '../utils/constants'
 import {Experience} from './Experience'
 
-const limitMovement = 30
+const rotSpeed = 0.006
 const limitRotXFactor = 0.1
 const localVec3 = new Vector3()
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- TODO
@@ -88,20 +88,20 @@ export class Camera {
           this.characterRb
         ) {
           let {movementX, movementY} = event
-          if (movementX > limitMovement) {
-            movementX = limitMovement
+          if (movementX > 0) {
+            movementX = Math.log(movementX)
           }
-          if (movementX < -limitMovement) {
-            movementX = -limitMovement
+          if (movementX < 0) {
+            movementX = -Math.log(-movementX)
           }
-          if (movementY > limitMovement) {
-            movementY = limitMovement
+          if (movementY > 0) {
+            movementY = Math.log(movementY)
           }
-          if (movementY < -limitMovement) {
-            movementY = -limitMovement
+          if (movementY < 0) {
+            movementY = -Math.log(-movementY)
           }
-          const rotYOffset = -movementX * Math.PI * 0.0005
-          const rotXOffset = -movementY * Math.PI * 0.0005
+          const rotYOffset = -movementX * Math.PI * rotSpeed
+          const rotXOffset = -movementY * Math.PI * rotSpeed
           this.cameraRotY += rotYOffset
           const newRotX = this.cameraRotX + rotXOffset
           if (
