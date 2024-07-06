@@ -17,6 +17,12 @@ export const App = () => {
     }
   }, [])
 
+  useEffect(() => {
+    if (progress >= 1) {
+      setHideLoader(true)
+    }
+  }, [progress])
+
   return (
     <div className="fixed h-screen w-screen font-[Cascade] text-white">
       <canvas ref={canvasRef} className="fixed top-0 left-0 outline-none"/>
