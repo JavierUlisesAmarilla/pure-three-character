@@ -59,7 +59,7 @@ export class Loaders extends EventEmitter {
 
   startLoading() {
     for (const asset of this.assetArr) {
-      if (asset.type === 'model') {
+      if (asset.type === 'glb') {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO
         this.loaders.gltfLoader.load(asset.path, (file: any) => {
           this.sourceLoaded(asset, file)

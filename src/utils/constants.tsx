@@ -7,12 +7,12 @@ export const IS_DEV_MODE = false
 export const assetArr: AssetType[] = [
   {
     name: 'characterModel',
-    type: 'model',
+    type: 'glb',
     path: 'models/character/scene.gltf',
   },
   {
     name: 'capsuleModel',
-    type: 'model',
+    type: 'glb',
     path: 'models/space_capsule.glb',
   },
 ]
