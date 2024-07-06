@@ -1,5 +1,6 @@
 import {LoadingManager, TextureLoader} from 'three'
 import {DRACOLoader} from 'three/examples/jsm/loaders/DRACOLoader'
+import {FBXLoader} from 'three/examples/jsm/loaders/FBXLoader'
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader'
 
 import {AssetType} from '../../utils/types'
@@ -54,21 +55,33 @@ export class Loaders extends EventEmitter {
     this.loaders.dracoLoader.setDecoderPath('draco/')
     this.loaders.gltfLoader = new GLTFLoader(this.loaders.loadingManager)
     this.loaders.gltfLoader.setDRACOLoader(this.loaders.dracoLoader)
+    this.loaders.fbxLoader = new FBXLoader(this.loaders.loadingManager)
     this.loaders.textureLoader = new TextureLoader(this.loaders.loadingManager)
   }
 
   startLoading() {
     for (const asset of this.assetArr) {
-      if (asset.type === 'glb') {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO
-        this.loaders.gltfLoader.load(asset.path, (file: any) => {
-          this.sourceLoaded(asset, file)
-        })
-      } else if (asset.type === 'texture') {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO
-        this.loaders.textureLoader.load(asset.path, (file: any) => {
-          this.sourceLoaded(asset, file)
-        })
+      switch (asset.type) {
+        case 'glb':
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO
+          this.loaders.gltfLoader.load(asset.path, (file: any) => {
+            this.sourceLoaded(asset, file)
+          })
+          break
+        case 'fbx':
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO
+          this.loaders.fbxLoader.load(asset.path, (file: any) => {
+            this.sourceLoaded(asset, file)
+          })
+          break
+        case 'texture':
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO
+          this.loaders.textureLoader.load(asset.path, (file: any) => {
+            this.sourceLoaded(asset, file)
+          })
+          break
+        default:
+          break
       }
     }
   }

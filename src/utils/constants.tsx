@@ -15,6 +15,36 @@ export const assetArr: AssetType[] = [
     type: 'glb',
     path: 'models/space_capsule.glb',
   },
+  {
+    name: 'readyPlayerMeModel',
+    type: 'glb',
+    path: 'models/ready_player_me/ready_player_me.glb',
+  },
+  {
+    name: 'fStandingIdle001Model',
+    type: 'fbx',
+    path: 'models/ready_player_me/animations/F_Standing_Idle_001.fbx',
+  },
+  {
+    name: 'fWalk002Model',
+    type: 'fbx',
+    path: 'models/ready_player_me/animations/F_Walk_002.fbx',
+  },
+  {
+    name: 'fWalkJump002Model',
+    type: 'fbx',
+    path: 'models/ready_player_me/animations/F_Walk_Jump_002.fbx',
+  },
+  {
+    name: 'mJog001Model',
+    type: 'fbx',
+    path: 'models/ready_player_me/animations/M_Jog_001.fbx',
+  },
+  {
+    name: 'mJogJump001Model',
+    type: 'fbx',
+    path: 'models/ready_player_me/animations/M_Jog_Jump_001.fbx',
+  },
 ]
 
 export const LIGHT_COLOR = '#FFF'
