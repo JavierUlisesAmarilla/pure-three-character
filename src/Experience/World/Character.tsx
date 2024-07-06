@@ -14,7 +14,6 @@ import {
   FRONT_DIRECTION_VEC3,
   LEFT_DIRECTION_VEC3,
   RIGHT_DIRECTION_VEC3,
-  Y_VEC3,
 } from '../../utils/constants'
 import {Experience} from '../Experience'
 import AnimController from '../Utils/AnimController'
@@ -144,12 +143,12 @@ export class Character {
       } else {
         this.updateAnim('F_Walk_Jump_002')
       }
-      this.rb.applyImpulse(Y_VEC3.clone().multiplyScalar(15), true)
+      // this.rb.applyImpulse(Y_VEC3.clone().multiplyScalar(15), true)
 
       setTimeout(() => {
         this.isJumping = false
         this.updateAnim('F_Standing_Idle_001')
-      }, 1000)
+      }, 3000)
     }
 
     if (
@@ -168,8 +167,8 @@ export class Character {
         }
       }
 
-      const nextRbPos = rbPos.clone().add(this.direction)
-      this.rb.setTranslation(nextRbPos, true)
+      // const nextRbPos = rbPos.clone().add(this.direction)
+      // this.rb.setTranslation(nextRbPos, true)
       this.dummy.lookAt(rbPos.clone().sub(this.direction))
     } else if (!this.isJumping) {
       this.updateAnim('F_Standing_Idle_001')
