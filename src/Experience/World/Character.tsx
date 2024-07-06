@@ -139,12 +139,16 @@ export class Character {
 
     if (isJump && !this.isJumping) {
       this.isJumping = true
-      this.updateAnim('Jump')
+      if (isFast) {
+        this.updateAnim('M_Jog_Jump_001')
+      } else {
+        this.updateAnim('F_Walk_Jump_002')
+      }
       this.rb.applyImpulse(Y_VEC3.clone().multiplyScalar(15), true)
 
       setTimeout(() => {
         this.isJumping = false
-        this.updateAnim('Idle')
+        this.updateAnim('F_Standing_Idle_001')
       }, 1000)
     }
 
@@ -155,12 +159,12 @@ export class Character {
       if (isFast) {
         this.setDirection(this.walkSpeed * 3)
         if (!this.isJumping) {
-          this.updateAnim('Run')
+          this.updateAnim('M_Jog_001')
         }
       } else {
         this.setDirection(this.walkSpeed)
         if (!this.isJumping) {
-          this.updateAnim('Walk')
+          this.updateAnim('F_Walk_002')
         }
       }
 
@@ -168,7 +172,7 @@ export class Character {
       this.rb.setTranslation(nextRbPos, true)
       this.dummy.lookAt(rbPos.clone().sub(this.direction))
     } else if (!this.isJumping) {
-      this.updateAnim('Idle')
+      this.updateAnim('F_Standing_Idle_001')
     }
 
     this.rb.setRotation(this.dummy.quaternion, true)
