@@ -6,11 +6,6 @@ export const IS_DEV_MODE = false
 
 export const assetArr: AssetType[] = [
   {
-    name: 'characterModel',
-    type: 'glb',
-    path: 'models/character/scene.gltf',
-  },
-  {
     name: 'capsuleModel',
     type: 'glb',
     path: 'models/space_capsule.glb',
@@ -19,6 +14,11 @@ export const assetArr: AssetType[] = [
     name: 'readyPlayerMeModel',
     type: 'glb',
     path: 'models/ready_player_me/ready_player_me.glb',
+  },
+  {
+    name: 'masculineTPoseModel',
+    type: 'fbx',
+    path: 'models/ready_player_me/animations/Masculine_TPose.fbx',
   },
   {
     name: 'fStandingIdle001Model',

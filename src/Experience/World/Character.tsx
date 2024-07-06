@@ -8,7 +8,6 @@ import {
   Object3D,
   Vector3,
 } from 'three'
-import {GLTF} from 'three/examples/jsm/loaders/GLTFLoader'
 
 import {
   BACK_DIRECTION_VEC3,
@@ -25,7 +24,7 @@ export class Character {
   time
   keyboard
   rapierPhysics
-  model: GLTF
+  model: Group
   animModelArr: Group[]
   animMixer: AnimationMixer
   rb?: RAPIER.RigidBody
@@ -43,7 +42,8 @@ export class Character {
     this.keyboard = experience.keyboard
     this.rapierPhysics = experience.rapierPhysics
     const items = experience.loaders?.items
-    this.model = items?.readyPlayerMeModel
+    this.model = items?.masculineTPoseModel
+    this.model.scale.multiplyScalar(0.01)
     this.animModelArr = [
       items?.fStandingIdle001Model,
       items?.fWalk002Model,
@@ -51,7 +51,7 @@ export class Character {
       items?.mJog001Model,
       items?.mJogJump001Model,
     ]
-    this.animMixer = new AnimationMixer(this.model.scene)
+    this.animMixer = new AnimationMixer(this.model)
     this.direction = new Vector3()
     this.isJumping = false
     this.dummy = new Object3D()
@@ -65,13 +65,13 @@ export class Character {
       return
     }
     const object3d = new Object3D()
-    object3d.add(this.model.scene)
+    object3d.add(this.model)
     const capsuleMesh = new Mesh(new CapsuleGeometry(0.5, 1))
     capsuleMesh.position.y = 1
     capsuleMesh.visible = false
     capsuleMesh.name = 'character'
     object3d.add(capsuleMesh)
-    this.model.scene.rotation.set(0, Math.PI, 0)
+    this.model.rotation.set(0, Math.PI, 0)
     this.rb = this.rapierPhysics.createCapsulesRigidBody({
       object3d,
       capsuleInfoArr: [{halfHeight: 0.5, radius: 0.5, position: [0, 1, 0]}],
@@ -90,7 +90,7 @@ export class Character {
     })
     console.log('test: animActions:', animActions)
     this.animController = new AnimController(this.animMixer, animActions)
-    // this.animController.playNewActionOnly('F_Standing_Idle_001')
+    this.updateAnim('F_Standing_Idle_001')
   }
 
   setDirection = (speed: number) => {
