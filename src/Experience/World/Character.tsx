@@ -3,6 +3,7 @@ import {
   AnimationAction,
   AnimationMixer,
   CapsuleGeometry,
+  Group,
   Mesh,
   Object3D,
   Vector3,
@@ -25,6 +26,7 @@ export class Character {
   keyboard
   rapierPhysics
   model: GLTF
+  animModelArr: Group[]
   animMixer: AnimationMixer
   rb?: RAPIER.RigidBody
   animController?: AnimController
@@ -40,7 +42,15 @@ export class Character {
     this.time = experience.time
     this.keyboard = experience.keyboard
     this.rapierPhysics = experience.rapierPhysics
-    this.model = experience.loaders?.items.characterModel
+    const items = experience.loaders?.items
+    this.model = items?.readyPlayerMeModel
+    this.animModelArr = [
+      items?.fStandingIdle001Model,
+      items?.fWalk002Model,
+      items?.fWalkJump002Model,
+      items?.mJog001Model,
+      items?.mJogJump001Model,
+    ]
     this.animMixer = new AnimationMixer(this.model.scene)
     this.direction = new Vector3()
     this.isJumping = false
@@ -74,20 +84,13 @@ export class Character {
       return
     }
     const animActions: { [key: string]: AnimationAction } = {}
-    this.model?.animations.forEach((anim) => {
+    this.animModelArr.forEach((animModel) => {
+      const anim = animModel.animations[0]
       animActions[anim.name] = this.animMixer.clipAction(anim)
     })
-    const animControllerActions = {
-      Idle: animActions['Idle'],
-      Walk: animActions['Walk'],
-      Run: animActions['Run'],
-      Jump: animActions['Combat_Idle'],
-    }
-    this.animController = new AnimController(
-        this.animMixer,
-        animControllerActions,
-    )
-    this.animController.playNewActionOnly('Idle')
+    console.log('test: animActions:', animActions)
+    this.animController = new AnimController(this.animMixer, animActions)
+    // this.animController.playNewActionOnly('F_Standing_Idle_001')
   }
 
   setDirection = (speed: number) => {
