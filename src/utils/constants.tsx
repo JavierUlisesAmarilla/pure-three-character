@@ -5,10 +5,15 @@ import {AssetType} from './types'
 export const IS_DEV_MODE = false
 
 export const assetArr: AssetType[] = [
+  // {
+  //   name: 'capsuleModel',
+  //   type: 'glb',
+  //   path: 'models/space_capsule.glb',
+  // },
   {
     name: 'capsuleModel',
     type: 'glb',
-    path: 'models/space_capsule.glb',
+    path: 'models/capsule.glb',
   },
   {
     name: 'readyPlayerMeModel',
