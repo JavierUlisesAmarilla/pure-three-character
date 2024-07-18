@@ -2,7 +2,8 @@ import {Vector3} from 'three'
 
 import {AssetType} from './types'
 
-export const IS_DEV_MODE = false
+export const IS_AXES_HELPER_VISIBLE = true
+export const IS_PHYSICS_HELPER_VISIBLE = false
 
 export const assetArr: AssetType[] = [
   // {
