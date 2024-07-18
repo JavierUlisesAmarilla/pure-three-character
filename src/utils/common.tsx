@@ -1,4 +1,12 @@
-import {BufferGeometry, Group, Matrix4, Mesh, Object3D, SkinnedMesh} from 'three'
+import {
+  AnimationAction,
+  BufferGeometry,
+  Group,
+  Matrix4,
+  Mesh,
+  Object3D,
+  SkinnedMesh,
+} from 'three'
 import {mergeBufferGeometries} from 'three/examples/jsm/utils/BufferGeometryUtils'
 
 export const mergeModelMeshes = (
@@ -45,3 +53,8 @@ export const getChildMeshArr = (object: Object3D) => {
   })
   return childMeshArr
 }
+
+export const getTrackFromAction = (
+    action: AnimationAction,
+    trackName: string,
+) => action.getClip().tracks.find((value) => value.name === trackName)

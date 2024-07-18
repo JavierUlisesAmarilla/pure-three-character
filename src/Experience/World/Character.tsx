@@ -1,6 +1,6 @@
 import RAPIER from '@dimforge/rapier3d-compat'
 import {
-  AnimationAction,
+  AnimationClip,
   AnimationMixer,
   CapsuleGeometry,
   Group,
@@ -16,7 +16,9 @@ import {
   RIGHT_DIRECTION_VEC3,
 } from '../../utils/constants'
 import {Experience} from '../Experience'
-import AnimController from '../Utils/AnimController'
+import OffsetAnimController from '../Utils/OffsetAnimController'
+
+const modelScale = 0.01
 
 export class Character {
   scene
@@ -27,7 +29,7 @@ export class Character {
   animModelArr: Group[]
   animMixer: AnimationMixer
   rb?: RAPIER.RigidBody
-  animController?: AnimController
+  animController?: OffsetAnimController
   direction
   isJumping
   dummy
@@ -42,7 +44,7 @@ export class Character {
     this.rapierPhysics = experience.rapierPhysics
     const items = experience.loaders?.items
     this.model = items?.masculineTPoseModel
-    this.model.scale.multiplyScalar(0.01)
+    this.model.scale.multiplyScalar(modelScale)
     this.animModelArr = [
       items?.fStandingIdle001Model,
       items?.fWalk002Model,
@@ -82,13 +84,17 @@ export class Character {
     if (!this.animMixer) {
       return
     }
-    const animActions: { [key: string]: AnimationAction } = {}
+    const clipArr: AnimationClip[] = []
     this.animModelArr.forEach((animModel) => {
-      const anim = animModel.animations[0]
-      animActions[anim.name] = this.animMixer.clipAction(anim)
+      clipArr.push(animModel.animations[0])
     })
-    console.log('test: animActions:', animActions)
-    this.animController = new AnimController(this.animMixer, animActions)
+    this.animController = new OffsetAnimController({
+      mixer: this.animMixer,
+      clipArr,
+      modelScale: modelScale,
+      rootBoneName: 'Hips',
+      rootBonePositionTrackName: 'Hips.position',
+    })
     this.updateAnim('F_Standing_Idle_001')
   }
 
@@ -114,7 +120,7 @@ export class Character {
   updateAnim(animName: string) {
     if (this.moveState !== animName && this.animController) {
       this.moveState = animName
-      this.animController.playNewActionOnly(animName)
+      this.animController.playNewAction(animName)
     }
   }
 
