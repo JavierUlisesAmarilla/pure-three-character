@@ -6,12 +6,14 @@ import {
   Group,
   Mesh,
   Object3D,
+  SkeletonHelper,
   Vector3,
 } from 'three'
 
 import {
   BACK_DIRECTION_VEC3,
   FRONT_DIRECTION_VEC3,
+  IS_SKELETON_VISIBLE,
   LEFT_DIRECTION_VEC3,
   RIGHT_DIRECTION_VEC3,
 } from '../../utils/constants'
@@ -64,6 +66,9 @@ export class Character {
   initModel() {
     if (!this.scene || !this.model || !this.rapierPhysics) {
       return
+    }
+    if (IS_SKELETON_VISIBLE) {
+      this.scene.add(new SkeletonHelper(this.model))
     }
     const object3d = new Object3D()
     object3d.add(this.model)
