@@ -1,4 +1,4 @@
-import {AnimationClip, AnimationMixer, Vector3} from 'three'
+import {AnimationClip, AnimationMixer, Object3D, Vector3} from 'three'
 
 import {getTrackFromAction} from '../../utils/common'
 import {AnimationActionMap} from '../../utils/types'
@@ -8,6 +8,7 @@ const rootBonePosition0 = new Vector3()
 export default class OffsetAnimController {
   mixer: AnimationMixer
   actions: AnimationActionMap
+  model: Object3D
   modelScale: number
   rootBoneName?: string
   rootBonePositionTrackName?: string
@@ -31,6 +32,7 @@ export default class OffsetAnimController {
     clipArr.forEach((clip) => {
       this.actions[clip.name] = this.mixer.clipAction(clip)
     })
+    this.model = this.mixer.getRoot() as Object3D
     this.modelScale = modelScale ?? 1
     this.rootBoneName = rootBoneName
     this.rootBonePositionTrackName = rootBonePositionTrackName
@@ -54,8 +56,7 @@ export default class OffsetAnimController {
             prevAction,
             this.rootBonePositionTrackName,
         )
-        const model = prevAction.getRoot()
-        const rootBone = model.getObjectByName(this.rootBoneName)
+        const rootBone = this.model.getObjectByName(this.rootBoneName)
 
         if (rootBonePositionTrack && rootBone) {
           const rootBonePositionValueArr = rootBonePositionTrack.values
@@ -65,8 +66,13 @@ export default class OffsetAnimController {
               rootBonePositionValueArr[2],
           )
           console.log('test: rootBonePosition0:', rootBonePosition0)
-          console.log('test: model.position:', model.position)
+          console.log('test: model.position:', this.model.position)
           console.log('test: rootBone.position:', rootBone.position)
+          this.model.position.add(
+              rootBonePosition0
+                  .sub(rootBone.position)
+                  .multiplyScalar(this.modelScale),
+          )
         }
       }
 

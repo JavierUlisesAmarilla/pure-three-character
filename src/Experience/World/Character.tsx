@@ -180,6 +180,6 @@ export class Character {
       this.updateAnim('F_Standing_Idle_001')
     }
 
-    this.rb.setRotation(this.dummy.quaternion, true)
+    // this.rb.setRotation(this.dummy.quaternion, true)
   }
 }
