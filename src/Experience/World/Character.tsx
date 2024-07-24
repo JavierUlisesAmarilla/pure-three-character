@@ -77,7 +77,6 @@ export class Character {
     capsuleMesh.visible = false
     capsuleMesh.name = 'character'
     object3d.add(capsuleMesh)
-    this.model.rotation.set(0, Math.PI, 0)
     this.rb = this.rapierPhysics.createCapsulesRigidBody({
       object3d,
       capsuleInfoArr: [{halfHeight: 0.5, radius: 0.5, position: [0, 1, 0]}],

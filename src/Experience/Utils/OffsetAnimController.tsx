@@ -71,6 +71,7 @@ export default class OffsetAnimController {
           this.model.position.add(
               rootBonePosition0
                   .sub(rootBone.position)
+                  .negate()
                   .multiplyScalar(this.modelScale),
           )
         }
