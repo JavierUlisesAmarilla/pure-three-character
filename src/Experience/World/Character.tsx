@@ -97,7 +97,6 @@ export class Character {
       clipArr,
       modelScale: modelScale,
       rootBoneName: 'Hips',
-      rootBonePositionTrackName: 'Hips.position',
     })
     this.updateAnim('F_Standing_Idle_001')
   }

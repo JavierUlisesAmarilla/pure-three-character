@@ -1,4 +1,4 @@
-import {AnimationAction} from 'three'
+import {AnimationAction, Euler, Vector3} from 'three'
 
 export type AssetType = {
   name: string;
@@ -13,4 +13,14 @@ export type AnimationActionMap = {
 export type AnimationMixerEvent = {
   action: AnimationAction;
   loopDelta: number;
+};
+
+export type TransformType = {
+  position: Vector3;
+  rotation: Euler;
+  scale: Vector3;
+};
+
+export type BoneTransformsType = {
+  [key: string]: TransformType[];
 };
