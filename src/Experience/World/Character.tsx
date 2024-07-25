@@ -27,7 +27,7 @@ export class Character {
   animModelArr: Group[]
   animMixer: AnimationMixer
   rb?: RAPIER.RigidBody
-  animController?: OffsetAnimController
+  offsetAnimController?: OffsetAnimController
   direction
   isJumping
   dummy
@@ -68,7 +68,7 @@ export class Character {
     this.animModelArr.forEach((animModel) => {
       clipArr.push(animModel.animations[0])
     })
-    this.animController = new OffsetAnimController({
+    this.offsetAnimController = new OffsetAnimController({
       mixer: this.animMixer,
       clipArr,
     })
@@ -110,9 +110,9 @@ export class Character {
   }
 
   updateAnim(animName: string) {
-    if (this.moveState !== animName && this.animController) {
+    if (this.moveState !== animName && this.offsetAnimController) {
       this.moveState = animName
-      this.animController.playNewAction(animName)
+      this.offsetAnimController.playNewAction(animName)
     }
   }
 

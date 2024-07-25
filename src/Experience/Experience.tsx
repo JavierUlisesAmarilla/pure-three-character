@@ -79,8 +79,8 @@ export class Experience {
   }
 
   update() {
-    this.rapierPhysics?.update(IS_PHYSICS_HELPER_VISIBLE)
     this.world?.update()
+    this.rapierPhysics?.update(IS_PHYSICS_HELPER_VISIBLE)
     this.camera?.update()
     this.renderer?.update()
   }
