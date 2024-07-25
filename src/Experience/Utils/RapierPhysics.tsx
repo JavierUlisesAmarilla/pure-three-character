@@ -28,7 +28,7 @@ export class RapierPhysics {
     this.rb2object3d = new Map()
     this.scene = scene
 
-    // For the debug-renderer
+    // For debug renderer
     {
       const geometry = new THREE.BufferGeometry()
       const material = new THREE.LineBasicMaterial({
@@ -45,34 +45,39 @@ export class RapierPhysics {
     this.rapierWorld = new RAPIER.World(new RAPIER.Vector3(0.0, -9.81, 0.0))
   }
 
-  createRigidBody({
-    descriptor = 'dynamic',
-    enabledRotations,
-    mass,
-    linearDamping,
-    angularDamping,
-    position = [0, 0, 0],
-  }: {
-    descriptor?: DescriptorType;
-    enabledRotations?: boolean[];
-    mass?: number;
-    linearDamping?: number;
-    angularDamping?: number;
-    position?: number[];
-  }) {
+  update(debugRender: boolean = false) {
     if (!this.rapierWorld) {
       return
     }
-    const bodyDesc = getRigidBodyDesc({
-      descriptor,
-      enabledRotations,
-      mass,
-      linearDamping,
-      angularDamping,
+
+    if (debugRender) {
+      const buffers = this.rapierWorld.debugRender()
+      this.lines.visible = true
+      this.lines.geometry.setAttribute(
+          'position',
+          new THREE.BufferAttribute(buffers.vertices, 3),
+      )
+      this.lines.geometry.setAttribute(
+          'color',
+          new THREE.BufferAttribute(buffers.colors, 4),
+      )
+    } else {
+      this.lines.visible = false
+    }
+
+    this.rapierWorld.step()
+
+    this.rapierWorld.forEachRigidBody((elt) => {
+      const translation = elt.translation()
+      const rotation = elt.rotation()
+      const object3d = this.rb2object3d.get(elt.handle)
+
+      if (object3d) {
+        object3d.position.set(translation.x, translation.y, translation.z)
+        object3d.quaternion.set(rotation.x, rotation.y, rotation.z, rotation.w)
+        object3d.updateMatrix()
+      }
     })
-    bodyDesc.setTranslation(position[0], position[1], position[2])
-    const body = this.rapierWorld.createRigidBody(bodyDesc)
-    return body
   }
 
   createTrimeshRigidBody({
@@ -205,44 +210,39 @@ export class RapierPhysics {
     return body
   }
 
-  rbToObject3d(rb: RAPIER.RigidBody, object3d: THREE.Object3D) {
-    this.rb2object3d.set(rb.handle, object3d)
-    this.scene.add(object3d)
-  }
-
-  update(debugRender: boolean = false) {
+  createRigidBody({
+    descriptor = 'dynamic',
+    enabledRotations,
+    mass,
+    linearDamping,
+    angularDamping,
+    position = [0, 0, 0],
+  }: {
+    descriptor?: DescriptorType;
+    enabledRotations?: boolean[];
+    mass?: number;
+    linearDamping?: number;
+    angularDamping?: number;
+    position?: number[];
+  }) {
     if (!this.rapierWorld) {
       return
     }
-
-    if (debugRender) {
-      const buffers = this.rapierWorld.debugRender()
-      this.lines.visible = true
-      this.lines.geometry.setAttribute(
-          'position',
-          new THREE.BufferAttribute(buffers.vertices, 3),
-      )
-      this.lines.geometry.setAttribute(
-          'color',
-          new THREE.BufferAttribute(buffers.colors, 4),
-      )
-    } else {
-      this.lines.visible = false
-    }
-
-    this.rapierWorld.step()
-
-    this.rapierWorld.forEachRigidBody((elt) => {
-      const translation = elt.translation()
-      const rotation = elt.rotation()
-      const object3d = this.rb2object3d.get(elt.handle)
-
-      if (object3d) {
-        object3d.position.set(translation.x, translation.y, translation.z)
-        object3d.quaternion.set(rotation.x, rotation.y, rotation.z, rotation.w)
-        object3d.updateMatrix()
-      }
+    const bodyDesc = getRigidBodyDesc({
+      descriptor,
+      enabledRotations,
+      mass,
+      linearDamping,
+      angularDamping,
     })
+    bodyDesc.setTranslation(position[0], position[1], position[2])
+    const body = this.rapierWorld.createRigidBody(bodyDesc)
+    return body
+  }
+
+  rbToObject3d(rb: RAPIER.RigidBody, object3d: THREE.Object3D) {
+    this.rb2object3d.set(rb.handle, object3d)
+    this.scene.add(object3d)
   }
 }
 
