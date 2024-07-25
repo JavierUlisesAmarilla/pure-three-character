@@ -24,6 +24,7 @@ export class Ground {
     }
     const mesh = mergeModelMeshes(this.model.scene)
     mesh.name = 'ground'
+    mesh.position.y = 10
     // this.rapierPhysics.createTrimeshRigidBody({
     //   mesh,
     //   scale: 0.04,
@@ -33,7 +34,6 @@ export class Ground {
     this.rapierPhysics.createTrimeshRigidBody({
       mesh,
       scale: 15,
-      position: [0, 10, 0],
       descriptor: 'fixed',
     })
   }

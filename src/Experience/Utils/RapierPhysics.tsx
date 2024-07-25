@@ -20,6 +20,7 @@ type CapsuleInfoType = {
 
 const object3dPosition = new THREE.Vector3()
 const rootWorldPosition = new THREE.Vector3()
+const colliderPosition = new THREE.Vector3()
 
 export class RapierPhysics {
   rapierWorld?: RAPIER.World
@@ -68,8 +69,29 @@ export class RapierPhysics {
       this.lines.visible = false
     }
 
+    // Update colliders position
+    this.rapierWorld.forEachRigidBody((elt) => {
+      const object3d = this.rb2object3d.get(elt.handle)
+
+      if (object3d) {
+        object3d.getWorldPosition(colliderPosition)
+
+        if (object3d.userData.rootBoneName) {
+          const rootBone = object3d.getObjectByName(
+              object3d.userData.rootBoneName,
+          )
+          if (rootBone) {
+            rootBone.getWorldPosition(colliderPosition)
+          }
+        }
+
+        elt.setTranslation(colliderPosition, true)
+      }
+    })
+
     this.rapierWorld.step()
 
+    // Update objects position
     this.rapierWorld.forEachRigidBody((elt) => {
       const translation = elt.translation()
       const object3d = this.rb2object3d.get(elt.handle)
@@ -96,13 +118,11 @@ export class RapierPhysics {
 
   createTrimeshRigidBody({
     descriptor = 'dynamic',
-    position = [0, 0, 0],
     enabledRotations,
     mesh,
     scale = 1,
   }: {
     descriptor?: DescriptorType;
-    position?: number[];
     enabledRotations?: boolean[];
     mesh: THREE.Mesh;
     scale?: number;
@@ -117,7 +137,6 @@ export class RapierPhysics {
     }
     const body = this.createRigidBody({
       descriptor,
-      position,
       enabledRotations,
     })
     if (!body) {
@@ -136,20 +155,17 @@ export class RapierPhysics {
 
   createBallsRigidBody({
     descriptor = 'dynamic',
-    position = [0, 0, 0],
     enabledRotations,
     object3d,
     ballInfoArr,
   }: {
     descriptor?: DescriptorType;
-    position?: number[];
     enabledRotations?: boolean[];
     object3d: THREE.Object3D;
     ballInfoArr: Array<BallInfoType>;
   }) {
     const body = this.createRigidBody({
       descriptor,
-      position,
       enabledRotations,
     })
     if (!body) {
@@ -179,7 +195,6 @@ export class RapierPhysics {
     mass,
     linearDamping,
     angularDamping,
-    position = [0, 0, 0],
     object3d,
     capsuleInfoArr,
   }: {
@@ -188,7 +203,6 @@ export class RapierPhysics {
     mass?: number;
     linearDamping?: number;
     angularDamping?: number;
-    position?: number[];
     object3d: THREE.Object3D;
     capsuleInfoArr: Array<CapsuleInfoType>;
   }) {
@@ -198,7 +212,6 @@ export class RapierPhysics {
       mass,
       linearDamping,
       angularDamping,
-      position,
     })
     if (!body) {
       return
@@ -230,14 +243,12 @@ export class RapierPhysics {
     mass,
     linearDamping,
     angularDamping,
-    position = [0, 0, 0],
   }: {
     descriptor?: DescriptorType;
     enabledRotations?: boolean[];
     mass?: number;
     linearDamping?: number;
     angularDamping?: number;
-    position?: number[];
   }) {
     if (!this.rapierWorld) {
       return
@@ -249,7 +260,6 @@ export class RapierPhysics {
       linearDamping,
       angularDamping,
     })
-    bodyDesc.setTranslation(position[0], position[1], position[2])
     const body = this.rapierWorld.createRigidBody(bodyDesc)
     return body
   }

@@ -84,7 +84,6 @@ export class Character {
     }
     this.rb = this.rapierPhysics.createCapsulesRigidBody({
       object3d: this.model,
-      position: [0, 1, 0],
       capsuleInfoArr: [{halfHeight: 0.5, radius: 0.5, position: [0, 0, 0]}],
       enabledRotations: [false, true, false],
     })
