@@ -77,7 +77,7 @@ module.exports = {
     'no-lone-blocks': 'error',
     'no-lonely-if': 'error',
     'no-loop-func': 'error',
-    'no-mixed-operators': 'error',
+    'no-mixed-operators': 'off',
     'no-multi-assign': ['error', {ignoreNonDeclaration: true}],
     'no-return-assign': 'error',
     'no-shadow': 'error',

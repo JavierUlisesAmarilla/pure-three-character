@@ -74,17 +74,13 @@ export class RapierPhysics {
       const object3d = this.rb2object3d.get(elt.handle)
 
       if (object3d) {
-        const object3dRoot = this.getObject3dRoot(object3d)
-
-        if (object3dRoot) {
-          offset.set(
-              translation.x - object3d.position.x,
-              translation.y - object3d.position.y,
-              translation.z - object3d.position.z,
-          )
-          object3d.position.add(offset)
-          object3d.updateMatrix()
-        }
+        offset.set(
+            translation.x - object3d.position.x,
+            translation.y - object3d.position.y,
+            translation.z - object3d.position.z,
+        )
+        object3d.position.add(offset)
+        object3d.updateMatrix()
       }
     })
   }
