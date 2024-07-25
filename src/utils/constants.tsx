@@ -2,10 +2,10 @@ import {Vector3} from 'three'
 
 import {AssetType} from './types'
 
-export const IS_AXES_HELPER_VISIBLE = true
+export const IS_AXES_HELPER_VISIBLE = false
 export const IS_PHYSICS_HELPER_VISIBLE = false
-export const IS_ORBIT_CONTROLS_USED = true
-export const IS_SKELETON_VISIBLE = true
+export const IS_ORBIT_CONTROLS_USED = false
+export const IS_SKELETON_VISIBLE = false
 export const AXES_LENGTH = 10
 export const LIGHT_COLOR = '#FFF'
 export const LIGHT_INTENSITY = 0.2
