@@ -82,6 +82,8 @@ export class RapierPhysics {
           )
           if (rootBone) {
             rootBone.getWorldPosition(colliderPosition)
+            const translation = elt.translation()
+            colliderPosition.y = translation.y
           }
         }
 
