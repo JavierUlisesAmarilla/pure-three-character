@@ -9,11 +9,12 @@ import {
 
 import {AnimationActionMap, BoneTransformsType} from '../../utils/types'
 
+const vec3 = new Vector3()
+
 export default class OffsetAnimController {
   model: Object3D
-  modelScale: number
   rootBone?: Object3D
-  rootBonePosition0?: Vector3
+  rootBonePosition0: Vector3
   mixer: AnimationMixer
   actions: AnimationActionMap
   curActionName?: string
@@ -33,11 +34,13 @@ export default class OffsetAnimController {
       this.actions[clip.name] = this.mixer.clipAction(clip)
     })
     this.model = this.mixer.getRoot() as Object3D
-    this.modelScale = this.model.userData.modelScale ?? 1
     this.transitionDuration = 0.08
     if (this.model.userData.rootBoneName) {
-      this.rootBone = this.model.getObjectByName(this.model.userData.rootBoneName)
+      this.rootBone = this.model.getObjectByName(
+          this.model.userData.rootBoneName,
+      )
     }
+    this.rootBonePosition0 = new Vector3()
   }
 
   playNewAction(actionName: string) {
@@ -57,12 +60,8 @@ export default class OffsetAnimController {
     const transforms = this.getBoneTransforms()
 
     if (this.rootBone && this.rootBonePosition0) {
-      this.model.position.add(
-          this.rootBonePosition0
-              .sub(this.rootBone.position)
-              .negate()
-              .multiplyScalar(this.modelScale),
-      )
+      this.rootBone.getWorldPosition(vec3)
+      this.model.position.add(this.rootBonePosition0.sub(vec3).negate())
     }
 
     this.actions[this.curActionName].stop()
@@ -103,7 +102,7 @@ export default class OffsetAnimController {
     this.actions[actionName].play()
     this.mixer.update(0)
     const newTransforms = this.getBoneTransforms()
-    this.rootBonePosition0 = this.rootBone?.position.clone()
+    this.rootBone?.getWorldPosition(this.rootBonePosition0)
     this.actions[actionName].stop()
     this.setBoneTransforms(oldTransforms)
 

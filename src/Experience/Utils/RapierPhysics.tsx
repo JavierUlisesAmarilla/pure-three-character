@@ -19,6 +19,7 @@ type CapsuleInfoType = {
 };
 
 const offset = new THREE.Vector3()
+// const rootWorldPosition = new THREE.Vector3()
 
 export class RapierPhysics {
   rapierWorld?: RAPIER.World
@@ -84,8 +85,7 @@ export class RapierPhysics {
         //   const rootBone = object3d.getObjectByName(object3d.userData.rootBoneName)
 
         //   if (rootBone) {
-        //     const modelScale = object3d.userData.modelScale ?? 1
-        //     console.log('test:', rootBone, modelScale)
+        //     rootBone.getWorldPosition(rootWorldPosition)
         //   }
         // }
 

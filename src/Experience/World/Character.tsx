@@ -18,8 +18,6 @@ import {
 import {Experience} from '../Experience'
 import OffsetAnimController from '../Utils/OffsetAnimController'
 
-const modelScale = 0.01
-
 export class Character {
   scene
   time
@@ -44,11 +42,8 @@ export class Character {
     this.rapierPhysics = experience.rapierPhysics
     const items = experience.loaders?.items
     this.model = items?.masculineTPoseModel
-    this.model.scale.multiplyScalar(modelScale)
-    this.model.userData = {
-      modelScale,
-      rootBoneName: 'Hips',
-    }
+    this.model.scale.multiplyScalar(0.01)
+    this.model.userData = {rootBoneName: 'Hips'}
     this.animModelArr = [
       items?.fStandingIdle001Model,
       items?.fWalk002Model,
