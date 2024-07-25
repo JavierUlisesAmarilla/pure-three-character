@@ -79,6 +79,16 @@ export class RapierPhysics {
             translation.y - object3d.position.y,
             translation.z - object3d.position.z,
         )
+
+        // if (object3d.userData.rootBoneName) {
+        //   const rootBone = object3d.getObjectByName(object3d.userData.rootBoneName)
+
+        //   if (rootBone) {
+        //     const modelScale = object3d.userData.modelScale ?? 1
+        //     console.log('test:', rootBone, modelScale)
+        //   }
+        // }
+
         object3d.position.add(offset)
         object3d.updateMatrix()
       }
