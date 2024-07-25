@@ -18,6 +18,8 @@ type CapsuleInfoType = {
   position: number[];
 };
 
+const offset = new THREE.Vector3()
+
 export class RapierPhysics {
   rapierWorld?: RAPIER.World
   rb2object3d: Map<number, THREE.Object3D>
@@ -69,13 +71,20 @@ export class RapierPhysics {
 
     this.rapierWorld.forEachRigidBody((elt) => {
       const translation = elt.translation()
-      const rotation = elt.rotation()
       const object3d = this.rb2object3d.get(elt.handle)
 
       if (object3d) {
-        object3d.position.set(translation.x, translation.y, translation.z)
-        object3d.quaternion.set(rotation.x, rotation.y, rotation.z, rotation.w)
-        object3d.updateMatrix()
+        const object3dRoot = this.getObject3dRoot(object3d)
+
+        if (object3dRoot) {
+          offset.set(
+              translation.x - object3d.position.x,
+              translation.y - object3d.position.y,
+              translation.z - object3d.position.z,
+          )
+          object3d.position.add(offset)
+          object3d.updateMatrix()
+        }
       }
     })
   }
@@ -243,6 +252,13 @@ export class RapierPhysics {
   rbToObject3d(rb: RAPIER.RigidBody, object3d: THREE.Object3D) {
     this.rb2object3d.set(rb.handle, object3d)
     this.scene.add(object3d)
+  }
+
+  getObject3dRoot(object3d: THREE.Object3D): THREE.Object3D {
+    if (!object3d.parent || object3d.parent === this.scene) {
+      return object3d
+    }
+    return this.getObject3dRoot(object3d.parent)
   }
 }
 
