@@ -18,7 +18,7 @@ export default class OffsetAnimController {
   actions: AnimationActionMap
   curActionName?: string
   transitionDuration: number
-  isTransitioning: boolean
+  timeline?: gsap.core.Timeline
 
   constructor({
     mixer,
@@ -38,15 +38,14 @@ export default class OffsetAnimController {
     })
     this.model = this.mixer.getRoot() as Object3D
     this.modelScale = modelScale ?? 1
-    this.transitionDuration = 0.1
-    this.isTransitioning = false
+    this.transitionDuration = 0.08
     if (rootBoneName) {
       this.rootBone = this.model.getObjectByName(rootBoneName)
     }
   }
 
   playNewAction(actionName: string) {
-    if (this.curActionName === actionName || this.isTransitioning) {
+    if (this.curActionName === actionName) {
       return
     }
     this.stopAction()
@@ -58,6 +57,7 @@ export default class OffsetAnimController {
     if (!this.curActionName) {
       return
     }
+    this.timeline?.kill()
     const transforms = this.getBoneTransforms()
 
     if (this.rootBone && this.rootBonePosition0) {
@@ -79,8 +79,8 @@ export default class OffsetAnimController {
     this.model.traverse((child) => {
       if (child instanceof SkinnedMesh) {
         transforms[child.name] = child.skeleton.bones.map((bone) => ({
+          position: bone.position.clone(),
           quaternion: bone.quaternion.clone(),
-          // rotation: bone.rotation.clone(),
           scale: bone.scale.clone(),
         }))
       }
@@ -96,81 +96,78 @@ export default class OffsetAnimController {
 
         child.skeleton.bones.forEach((bone, idx) => {
           bone.quaternion.copy(transform[idx].quaternion)
-          // bone.rotation.copy(transform[idx].rotation)
           bone.scale.copy(transform[idx].scale)
         })
       }
     })
   }
 
-  async playAction(actionName: string) {
-    // Animate old transforms to new transforms before playing new action
-    this.isTransitioning = true
+  playAction(actionName: string) {
     const oldTransforms = this.getBoneTransforms()
     this.actions[actionName].play()
     this.mixer.update(0)
     const newTransforms = this.getBoneTransforms()
+    this.rootBonePosition0 = this.rootBone?.position.clone()
     this.actions[actionName].stop()
     this.setBoneTransforms(oldTransforms)
-    await this.animateBoneTransforms(newTransforms)
-    this.rootBonePosition0 = this.rootBone?.position.clone()
-    this.isTransitioning = false
 
-    // Play new action
-    this.actions[actionName].play()
+    this.animateBoneTransforms(newTransforms, () => {
+      this.actions[actionName].play()
+    })
   }
 
-  animateBoneTransforms(transforms: BoneTransformsType) {
-    return new Promise((resolve) => {
-      const timeline = gsap.timeline()
+  animateBoneTransforms(
+      transforms: BoneTransformsType,
+      onComplete: () => void,
+  ) {
+    this.timeline = gsap.timeline()
 
-      this.model.traverse((child) => {
-        if (child instanceof SkinnedMesh) {
-          const transform = transforms[child.name]
+    this.model.traverse((child) => {
+      if (child instanceof SkinnedMesh) {
+        const transform = transforms[child.name]
 
-          child.skeleton.bones.forEach((bone, idx) => {
-            const quaternion = transform[idx].quaternion
-            timeline.to(
-                bone.quaternion,
-                {
-                  x: quaternion.x,
-                  y: quaternion.y,
-                  z: quaternion.z,
-                  w: quaternion.w,
-                  duration: this.transitionDuration,
-                },
-                0,
-            )
-            // const rotation = transform[idx].rotation
-            // timeline.to(
-            //     bone.rotation,
-            //     {
-            //       x: rotation.x,
-            //       y: rotation.y,
-            //       z: rotation.z,
-            //       duration: this.transitionDuration,
-            //     },
-            //     0,
-            // )
-            const scale = transform[idx].scale
-            timeline.to(
-                bone.scale,
-                {
-                  x: scale.x,
-                  y: scale.y,
-                  z: scale.z,
-                  duration: this.transitionDuration,
-                },
-                0,
-            )
-          })
-        }
-      })
+        child.skeleton.bones.forEach((bone, idx) => {
+          const quaternion = transform[idx].quaternion
+          const position = transform[idx].position
+          this.timeline?.to(
+              bone.position,
+              {
+                x: position.x,
+                y: position.y,
+                z: position.z,
+                duration: this.transitionDuration,
+              },
+              0,
+          )
+          this.timeline?.to(
+              bone.quaternion,
+              {
+                x: quaternion.x,
+                y: quaternion.y,
+                z: quaternion.z,
+                w: quaternion.w,
+                duration: this.transitionDuration,
+              },
+              0,
+          )
+          const scale = transform[idx].scale
+          this.timeline?.to(
+              bone.scale,
+              {
+                x: scale.x,
+                y: scale.y,
+                z: scale.z,
+                duration: this.transitionDuration,
+              },
+              0,
+          )
+        })
+      }
+    })
 
-      timeline.to(null, {
-        duration: this.transitionDuration,
-        onComplete: resolve,
-      })
+    this.timeline.to(null, {
+      duration: this.transitionDuration,
+      onComplete,
     })
   }
 }
