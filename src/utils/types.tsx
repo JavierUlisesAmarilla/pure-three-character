@@ -16,7 +16,6 @@ export type AnimationMixerEvent = {
 };
 
 export type TransformType = {
-  // position: Vector3;
   rotation: Euler;
   scale: Vector3;
 };
