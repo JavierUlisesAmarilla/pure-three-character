@@ -2,9 +2,7 @@ import RAPIER from '@dimforge/rapier3d-compat'
 import {
   AnimationClip,
   AnimationMixer,
-  CapsuleGeometry,
   Group,
-  Mesh,
   Object3D,
   SkeletonHelper,
   Vector3,
@@ -47,6 +45,10 @@ export class Character {
     const items = experience.loaders?.items
     this.model = items?.masculineTPoseModel
     this.model.scale.multiplyScalar(modelScale)
+    this.model.userData = {
+      modelScale,
+      rootBoneName: 'Hips',
+    }
     this.animModelArr = [
       items?.fStandingIdle001Model,
       items?.fWalk002Model,
@@ -59,29 +61,8 @@ export class Character {
     this.isJumping = false
     this.dummy = new Object3D()
     this.walkSpeed = 0.05
-    this.initModel()
     this.initAnim()
-  }
-
-  initModel() {
-    if (!this.scene || !this.model || !this.rapierPhysics) {
-      return
-    }
-    if (IS_SKELETON_VISIBLE) {
-      this.scene.add(new SkeletonHelper(this.model))
-    }
-    const object3d = new Object3D()
-    object3d.add(this.model)
-    const capsuleMesh = new Mesh(new CapsuleGeometry(0.5, 1))
-    capsuleMesh.position.y = 1
-    capsuleMesh.visible = false
-    capsuleMesh.name = 'character'
-    object3d.add(capsuleMesh)
-    this.rb = this.rapierPhysics.createCapsulesRigidBody({
-      object3d,
-      capsuleInfoArr: [{halfHeight: 0.5, radius: 0.5, position: [0, 1, 0]}],
-      enabledRotations: [false, true, false],
-    })
+    this.initModel()
   }
 
   initAnim() {
@@ -95,10 +76,22 @@ export class Character {
     this.animController = new OffsetAnimController({
       mixer: this.animMixer,
       clipArr,
-      modelScale: modelScale,
-      rootBoneName: 'Hips',
     })
     this.updateAnim('F_Standing_Idle_001')
+  }
+
+  initModel() {
+    if (!this.scene || !this.model || !this.rapierPhysics) {
+      return
+    }
+    if (IS_SKELETON_VISIBLE) {
+      this.scene.add(new SkeletonHelper(this.model))
+    }
+    this.rb = this.rapierPhysics.createCapsulesRigidBody({
+      object3d: this.model,
+      capsuleInfoArr: [{halfHeight: 0.5, radius: 0.5, position: [0, 1, 0]}],
+      enabledRotations: [false, true, false],
+    })
   }
 
   setDirection = (speed: number) => {
