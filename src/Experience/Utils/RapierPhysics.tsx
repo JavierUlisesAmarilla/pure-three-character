@@ -18,8 +18,8 @@ type CapsuleInfoType = {
   position: number[];
 };
 
-const offset = new THREE.Vector3()
-// const rootWorldPosition = new THREE.Vector3()
+const object3dPosition = new THREE.Vector3()
+const rootWorldPosition = new THREE.Vector3()
 
 export class RapierPhysics {
   rapierWorld?: RAPIER.World
@@ -75,21 +75,20 @@ export class RapierPhysics {
       const object3d = this.rb2object3d.get(elt.handle)
 
       if (object3d) {
-        offset.set(
-            translation.x - object3d.position.x,
-            translation.y - object3d.position.y,
-            translation.z - object3d.position.z,
-        )
+        object3dPosition.set(translation.x, translation.y, translation.z)
 
-        // if (object3d.userData.rootBoneName) {
-        //   const rootBone = object3d.getObjectByName(object3d.userData.rootBoneName)
+        if (object3d.userData.rootBoneName) {
+          const rootBone = object3d.getObjectByName(
+              object3d.userData.rootBoneName,
+          )
 
-        //   if (rootBone) {
-        //     rootBone.getWorldPosition(rootWorldPosition)
-        //   }
-        // }
+          if (rootBone) {
+            rootBone.getWorldPosition(rootWorldPosition)
+            object3dPosition.sub(rootWorldPosition.sub(object3d.position))
+          }
+        }
 
-        object3d.position.add(offset)
+        object3d.position.copy(object3dPosition)
         object3d.updateMatrix()
       }
     })
