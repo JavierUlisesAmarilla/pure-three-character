@@ -74,7 +74,7 @@ export default class OffsetAnimController {
     this.model.traverse((child) => {
       if (child instanceof SkinnedMesh) {
         transforms[child.name] = child.skeleton.bones.map((bone) => ({
-          position: bone.position.clone(),
+          // position: bone.position.clone(),
           rotation: bone.rotation.clone(),
           scale: bone.scale.clone(),
         }))
@@ -90,7 +90,7 @@ export default class OffsetAnimController {
         const transform = transforms[child.name]
 
         child.skeleton.bones.forEach((bone, idx) => {
-          bone.position.copy(transform[idx].position)
+          // bone.position.copy(transform[idx].position)
           bone.rotation.copy(transform[idx].rotation)
           bone.scale.copy(transform[idx].scale)
         })
