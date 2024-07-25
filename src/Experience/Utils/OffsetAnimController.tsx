@@ -18,6 +18,7 @@ export default class OffsetAnimController {
   actions: AnimationActionMap
   curActionName?: string
   transitionDuration: number
+  isTransitioning: boolean
 
   constructor({
     mixer,
@@ -38,13 +39,14 @@ export default class OffsetAnimController {
     this.model = this.mixer.getRoot() as Object3D
     this.modelScale = modelScale ?? 1
     this.transitionDuration = 0.1
+    this.isTransitioning = false
     if (rootBoneName) {
       this.rootBone = this.model.getObjectByName(rootBoneName)
     }
   }
 
   playNewAction(actionName: string) {
-    if (this.curActionName === actionName) {
+    if (this.curActionName === actionName || this.isTransitioning) {
       return
     }
     this.stopAction()
@@ -77,7 +79,8 @@ export default class OffsetAnimController {
     this.model.traverse((child) => {
       if (child instanceof SkinnedMesh) {
         transforms[child.name] = child.skeleton.bones.map((bone) => ({
-          rotation: bone.rotation.clone(),
+          quaternion: bone.quaternion.clone(),
+          // rotation: bone.rotation.clone(),
           scale: bone.scale.clone(),
         }))
       }
@@ -92,7 +95,8 @@ export default class OffsetAnimController {
         const transform = transforms[child.name]
 
         child.skeleton.bones.forEach((bone, idx) => {
-          bone.rotation.copy(transform[idx].rotation)
+          bone.quaternion.copy(transform[idx].quaternion)
+          // bone.rotation.copy(transform[idx].rotation)
           bone.scale.copy(transform[idx].scale)
         })
       }
@@ -101,6 +105,7 @@ export default class OffsetAnimController {
 
   async playAction(actionName: string) {
     // Animate old transforms to new transforms before playing new action
+    this.isTransitioning = true
     const oldTransforms = this.getBoneTransforms()
     this.actions[actionName].play()
     this.mixer.update(0)
@@ -109,6 +114,7 @@ export default class OffsetAnimController {
     this.setBoneTransforms(oldTransforms)
     await this.animateBoneTransforms(newTransforms)
     this.rootBonePosition0 = this.rootBone?.position.clone()
+    this.isTransitioning = false
 
     // Play new action
     this.actions[actionName].play()
@@ -123,17 +129,29 @@ export default class OffsetAnimController {
           const transform = transforms[child.name]
 
           child.skeleton.bones.forEach((bone, idx) => {
-            const rotation = transform[idx].rotation
+            const quaternion = transform[idx].quaternion
             timeline.to(
-                bone.rotation,
+                bone.quaternion,
                 {
-                  x: rotation.x,
-                  y: rotation.y,
-                  z: rotation.z,
+                  x: quaternion.x,
+                  y: quaternion.y,
+                  z: quaternion.z,
+                  w: quaternion.w,
                   duration: this.transitionDuration,
                 },
                 0,
             )
+            // const rotation = transform[idx].rotation
+            // timeline.to(
+            //     bone.rotation,
+            //     {
+            //       x: rotation.x,
+            //       y: rotation.y,
+            //       z: rotation.z,
+            //       duration: this.transitionDuration,
+            //     },
+            //     0,
+            // )
             const scale = transform[idx].scale
             timeline.to(
                 bone.scale,

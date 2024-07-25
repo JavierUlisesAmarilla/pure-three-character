@@ -1,4 +1,4 @@
-import {AnimationAction, Euler, Vector3} from 'three'
+import {AnimationAction, Quaternion, Vector3} from 'three'
 
 export type AssetType = {
   name: string;
@@ -16,7 +16,8 @@ export type AnimationMixerEvent = {
 };
 
 export type TransformType = {
-  rotation: Euler;
+  quaternion: Quaternion;
+  // rotation: Euler;
   scale: Vector3;
 };
 
