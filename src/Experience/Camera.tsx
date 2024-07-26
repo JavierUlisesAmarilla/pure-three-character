@@ -1,15 +1,6 @@
-import {
-  Euler,
-  Intersection,
-  Object3D,
-  PerspectiveCamera,
-  Raycaster,
-  Vector2,
-  Vector3,
-} from 'three'
+import {Euler, Object3D, PerspectiveCamera, Vector3} from 'three'
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
 
-import {getChildMeshArr} from '../utils/common'
 import {
   BACK_DIRECTION_VEC3,
   CAMERA_OFFSET,
@@ -23,20 +14,18 @@ import {Experience} from './Experience'
 
 const rotSpeed = 0.006
 const limitRotXFactor = 0.1
-const localVec3 = new Vector3()
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- TODO
-const zeroVec2 = new Vector2()
+const centerVec3 = new Vector3()
+const dummyVec3 = new Vector3()
 
 export class Camera {
   instance?: PerspectiveCamera
   canvas
   size
   scene
-  characterRb
+  model
+  rootBone?: Object3D
   cameraRotX
   cameraRotY
-  raycaster: Raycaster
-  raycasterMeshArr?: Object3D[]
   controls?: OrbitControls
 
   constructor() {
@@ -44,10 +33,14 @@ export class Camera {
     this.canvas = experience.canvas
     this.size = experience.size
     this.scene = experience.scene
-    this.characterRb = experience.world?.character.rb
+    this.model = experience.world?.character.model
+    if (this.model?.userData.rootBoneName) {
+      this.rootBone = this.model.getObjectByName(
+          this.model.userData.rootBoneName,
+      )
+    }
     this.cameraRotX = 0
     this.cameraRotY = 0
-    this.raycaster = new Raycaster()
     this.initInstance()
     this.initControls()
     this.initEvents()
@@ -66,7 +59,6 @@ export class Camera {
     this.instance.position.set(0, 2, -3)
     this.instance.rotation.set(0, Math.PI, 0)
     this.scene.add(this.instance)
-    this.raycasterMeshArr = getChildMeshArr(this.scene)
   }
 
   initControls() {
@@ -85,7 +77,7 @@ export class Camera {
         if (
           document.pointerLockElement === document.body &&
           this.instance &&
-          this.characterRb
+          this.model
         ) {
           let {movementX, movementY} = event
           if (movementX > 0) {
@@ -123,39 +115,24 @@ export class Camera {
     this.instance.updateProjectionMatrix()
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- TODO
-  computeCameraOffset(intersectArr: Intersection[]) {
-    //
-  }
-
   update() {
-    if (
-      !IS_ORBIT_CONTROLS_USED &&
-      this.instance &&
-      this.characterRb &&
-      this.raycaster &&
-      this.raycasterMeshArr
-    ) {
-      // this.raycaster.setFromCamera(zeroVec2, this.instance)
-      // const intersectArr = this.raycaster.intersectObjects(
-      //     this.raycasterMeshArr, false,
-      // )
-      // this.computeCameraOffset(intersectArr)
-      const characterRbTranslation = this.characterRb.translation()
-      const characterRbPos = new Vector3(
-          characterRbTranslation.x,
-          characterRbTranslation.y,
-          characterRbTranslation.z,
-      )
-      this.instance.position.copy(characterRbPos)
+    if (!IS_ORBIT_CONTROLS_USED && this.instance && this.model) {
+      if (this.rootBone) {
+        this.rootBone.getWorldPosition(centerVec3)
+        this.instance.position.copy(centerVec3)
+      } else {
+        this.model.getWorldPosition(centerVec3)
+        this.instance.position.copy(centerVec3)
+      }
+
       this.instance.quaternion.setFromEuler(
           new Euler(this.cameraRotX, this.cameraRotY, 0, 'ZYX'),
       )
       this.instance.position.add(
-          localVec3.copy(CAMERA_OFFSET).applyQuaternion(this.instance.quaternion),
+          dummyVec3.copy(CAMERA_OFFSET).applyQuaternion(this.instance.quaternion),
       )
 
-      const frontDirectionVec3 = characterRbPos
+      const frontDirectionVec3 = centerVec3
           .sub(this.instance.position)
           .setY(0)
           .normalize()
