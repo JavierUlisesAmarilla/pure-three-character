@@ -13,7 +13,7 @@ import {
 import {Experience} from './Experience'
 
 const rotSpeed = 0.006
-const limitRotXFactor = 0.1
+const limitRotXFactor = 0.2
 const centerVec3 = new Vector3()
 const dummyVec3 = new Vector3()
 
@@ -34,11 +34,7 @@ export class Camera {
     this.size = experience.size
     this.scene = experience.scene
     this.model = experience.world?.character.model
-    if (this.model?.userData.rootBoneName) {
-      this.rootBone = this.model.getObjectByName(
-          this.model.userData.rootBoneName,
-      )
-    }
+    this.rootBone = experience.world?.character.rootBone
     this.cameraRotX = 0
     this.cameraRotY = 0
     this.initInstance()

@@ -18,19 +18,23 @@ import {
 import {Experience} from '../Experience'
 import OffsetAnimController from '../Utils/OffsetAnimController'
 
+const rootBoneName = 'Hips'
+const rootBoneDummy = new Object3D()
+// const modelDummy = new Object3D()
+
 export class Character {
   scene
   time
   keyboard
   rapierPhysics
   model: Group
+  rootBone?: Object3D
   animModelArr: Group[]
   animMixer: AnimationMixer
   rb?: RAPIER.RigidBody
   offsetAnimController?: OffsetAnimController
   direction
   isJumping
-  dummy
   moveState!: string
   walkSpeed
 
@@ -43,7 +47,8 @@ export class Character {
     const items = experience.loaders?.items
     this.model = items?.masculineTPoseModel
     this.model.scale.multiplyScalar(0.01)
-    this.model.userData = {rootBoneName: 'Hips'}
+    this.model.userData = {rootBoneName}
+    this.rootBone = this.model.getObjectByName(rootBoneName)
     this.animModelArr = [
       items?.fStandingIdle001Model,
       items?.fWalk002Model,
@@ -54,7 +59,6 @@ export class Character {
     this.animMixer = new AnimationMixer(this.model)
     this.direction = new Vector3()
     this.isJumping = false
-    this.dummy = new Object3D()
     this.walkSpeed = 0.05
     this.initAnim()
     this.initModel()
@@ -71,6 +75,7 @@ export class Character {
     this.offsetAnimController = new OffsetAnimController({
       mixer: this.animMixer,
       clipArr,
+      rootBone: this.rootBone,
     })
     this.updateAnim('F_Standing_Idle_001')
   }
@@ -131,7 +136,7 @@ export class Character {
         rbTranslation.y,
         rbTranslation.z,
     )
-    this.dummy.position.copy(rbPos)
+    rootBoneDummy.position.copy(rbPos)
 
     if (isJump && !this.isJumping) {
       this.isJumping = true
@@ -166,11 +171,11 @@ export class Character {
 
       // const nextRbPos = rbPos.clone().add(this.direction)
       // this.rb.setTranslation(nextRbPos, true)
-      this.dummy.lookAt(rbPos.clone().sub(this.direction))
+      rootBoneDummy.lookAt(rbPos.clone().sub(this.direction))
     } else if (!this.isJumping) {
       this.updateAnim('F_Standing_Idle_001')
     }
 
-    // this.rb.setRotation(this.dummy.quaternion, true)
+    // this.rb.setRotation(rootBoneDummy.quaternion, true)
   }
 }

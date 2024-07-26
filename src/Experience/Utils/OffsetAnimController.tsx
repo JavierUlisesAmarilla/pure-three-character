@@ -24,9 +24,11 @@ export default class OffsetAnimController {
   constructor({
     mixer,
     clipArr,
+    rootBone,
   }: {
     mixer: AnimationMixer;
     clipArr: AnimationClip[];
+    rootBone?: Object3D;
   }) {
     this.mixer = mixer
     this.actions = {}
@@ -34,13 +36,9 @@ export default class OffsetAnimController {
       this.actions[clip.name] = this.mixer.clipAction(clip)
     })
     this.model = this.mixer.getRoot() as Object3D
-    this.transitionDuration = 0.08
-    if (this.model.userData.rootBoneName) {
-      this.rootBone = this.model.getObjectByName(
-          this.model.userData.rootBoneName,
-      )
-    }
+    this.rootBone = rootBone
     this.rootBonePosition0 = new Vector3()
+    this.transitionDuration = 0.08
   }
 
   playNewAction(actionName: string) {
