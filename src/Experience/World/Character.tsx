@@ -19,8 +19,9 @@ import {Experience} from '../Experience'
 import OffsetAnimController from '../Utils/OffsetAnimController'
 
 const rootBoneName = 'Hips'
-const rootBoneDummy = new Object3D()
-// const modelDummy = new Object3D()
+const modelDummyObj = new Object3D()
+const rootBoneDummyObj = new Object3D()
+const dummyVec3 = new Vector3()
 
 export class Character {
   scene
@@ -121,6 +122,17 @@ export class Character {
   }
 
   update() {
+    if (this.rootBone) {
+      this.model.getWorldPosition(modelDummyObj.position)
+      this.rootBone.getWorldPosition(rootBoneDummyObj.position)
+      dummyVec3.copy(rootBoneDummyObj.position)
+      modelDummyObj.position.y = dummyVec3.y
+      const distance = modelDummyObj.position.distanceTo(
+          rootBoneDummyObj.position,
+      )
+      console.log('test: distance:', distance)
+    }
+
     if (!this.time || !this.animMixer) {
       return
     }
@@ -136,7 +148,7 @@ export class Character {
         rbTranslation.y,
         rbTranslation.z,
     )
-    rootBoneDummy.position.copy(rbPos)
+    rootBoneDummyObj.position.copy(rbPos)
 
     if (isJump && !this.isJumping) {
       this.isJumping = true
@@ -171,11 +183,11 @@ export class Character {
 
       // const nextRbPos = rbPos.clone().add(this.direction)
       // this.rb.setTranslation(nextRbPos, true)
-      rootBoneDummy.lookAt(rbPos.clone().sub(this.direction))
+      rootBoneDummyObj.lookAt(rbPos.clone().sub(this.direction))
     } else if (!this.isJumping) {
       this.updateAnim('F_Standing_Idle_001')
     }
 
-    // this.rb.setRotation(rootBoneDummy.quaternion, true)
+    // this.rb.setRotation(rootBoneDummyObj.quaternion, true)
   }
 }
