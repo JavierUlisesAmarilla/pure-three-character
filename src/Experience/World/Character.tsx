@@ -10,17 +10,14 @@ import {
 
 import {
   BACK_DIRECTION_VEC3,
-  FRONT_DIRECTION_VEC3,
   IS_SKELETON_VISIBLE,
-  LEFT_DIRECTION_VEC3,
-  RIGHT_DIRECTION_VEC3,
 } from '../../utils/constants'
 import {Experience} from '../Experience'
 import OffsetAnimController from '../Utils/OffsetAnimController'
 
 const rootBoneName = 'Hips'
-const modelDummyObj = new Object3D()
-const rootBoneDummyObj = new Object3D()
+const modelDummyVec3 = new Vector3()
+const rootBoneDummyVec3 = new Vector3()
 const dummyVec3 = new Vector3()
 
 export class Character {
@@ -95,25 +92,6 @@ export class Character {
     })
   }
 
-  setDirection = (speed: number) => {
-    if (!this.keyboard) {
-      return
-    }
-    this.direction.set(0, 0, 0)
-    if (this.keyboard.isFront) {
-      this.direction.add(FRONT_DIRECTION_VEC3.clone().multiplyScalar(speed))
-    }
-    if (this.keyboard.isLeft) {
-      this.direction.add(LEFT_DIRECTION_VEC3.clone().multiplyScalar(speed))
-    }
-    if (this.keyboard.isBack) {
-      this.direction.add(BACK_DIRECTION_VEC3.clone().multiplyScalar(speed))
-    }
-    if (this.keyboard.isRight) {
-      this.direction.add(RIGHT_DIRECTION_VEC3.clone().multiplyScalar(speed))
-    }
-  }
-
   updateAnim(animName: string) {
     if (this.moveState !== animName && this.offsetAnimController) {
       this.moveState = animName
@@ -123,14 +101,14 @@ export class Character {
 
   update() {
     if (this.rootBone) {
-      this.model.getWorldPosition(modelDummyObj.position)
-      this.rootBone.getWorldPosition(rootBoneDummyObj.position)
-      dummyVec3.copy(rootBoneDummyObj.position)
-      modelDummyObj.position.y = dummyVec3.y
-      const distance = modelDummyObj.position.distanceTo(
-          rootBoneDummyObj.position,
-      )
-      console.log('test: distance:', distance)
+      this.model.getWorldPosition(modelDummyVec3)
+      this.rootBone.getWorldPosition(rootBoneDummyVec3)
+      dummyVec3.copy(rootBoneDummyVec3)
+      modelDummyVec3.y = dummyVec3.y
+      const distance = modelDummyVec3.distanceTo(rootBoneDummyVec3)
+      dummyVec3.add(BACK_DIRECTION_VEC3.multiplyScalar(distance))
+      this.model.position.copy(dummyVec3)
+      this.model.lookAt(rootBoneDummyVec3)
     }
 
     if (!this.time || !this.animMixer) {
@@ -142,14 +120,6 @@ export class Character {
     }
     const {isFront, isLeft, isBack, isRight, isFast, isJump} = this.keyboard
 
-    const rbTranslation = this.rb.translation()
-    const rbPos = new Vector3(
-        rbTranslation.x,
-        rbTranslation.y,
-        rbTranslation.z,
-    )
-    rootBoneDummyObj.position.copy(rbPos)
-
     if (isJump && !this.isJumping) {
       this.isJumping = true
       if (isFast) {
@@ -157,12 +127,6 @@ export class Character {
       } else {
         this.updateAnim('F_Walk_Jump_002')
       }
-      // this.rb.applyImpulse(Y_VEC3.clone().multiplyScalar(15), true)
-
-      setTimeout(() => {
-        this.isJumping = false
-        this.updateAnim('F_Standing_Idle_001')
-      }, 3000)
     }
 
     if (
@@ -170,24 +134,14 @@ export class Character {
       (isFront !== isBack || isLeft !== isRight)
     ) {
       if (isFast) {
-        this.setDirection(this.walkSpeed * 3)
         if (!this.isJumping) {
           this.updateAnim('M_Jog_001')
         }
-      } else {
-        this.setDirection(this.walkSpeed)
-        if (!this.isJumping) {
-          this.updateAnim('F_Walk_002')
-        }
+      } else if (!this.isJumping) {
+        this.updateAnim('F_Walk_002')
       }
-
-      // const nextRbPos = rbPos.clone().add(this.direction)
-      // this.rb.setTranslation(nextRbPos, true)
-      rootBoneDummyObj.lookAt(rbPos.clone().sub(this.direction))
     } else if (!this.isJumping) {
       this.updateAnim('F_Standing_Idle_001')
     }
-
-    // this.rb.setRotation(rootBoneDummyObj.quaternion, true)
   }
 }
