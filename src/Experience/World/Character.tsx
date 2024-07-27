@@ -19,6 +19,7 @@ const rootBoneName = 'Hips'
 const modelDummyVec3 = new Vector3()
 const rootBoneDummyVec3 = new Vector3()
 const dummyVec3 = new Vector3()
+const zeroVec3 = new Vector3()
 
 export class Character {
   scene
@@ -82,6 +83,7 @@ export class Character {
     if (!this.scene || !this.model || !this.rapierPhysics) {
       return
     }
+    console.log('test: this.model:', this.model)
     if (IS_SKELETON_VISIBLE) {
       this.scene.add(new SkeletonHelper(this.model))
     }
@@ -109,6 +111,11 @@ export class Character {
       dummyVec3.add(BACK_DIRECTION_VEC3.multiplyScalar(distance))
       this.model.position.copy(dummyVec3)
       this.model.lookAt(rootBoneDummyVec3)
+    }
+
+    const position = this.model.children[0].position
+    if (!position.equals(zeroVec3)) {
+      console.log('test: position:', position)
     }
 
     if (!this.time || !this.animMixer) {
