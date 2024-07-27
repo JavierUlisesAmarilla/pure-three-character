@@ -1,4 +1,3 @@
-import RAPIER from '@dimforge/rapier3d-compat'
 import {
   AnimationClip,
   AnimationMixer,
@@ -11,15 +10,15 @@ import {
 import {
   BACK_DIRECTION_VEC3,
   IS_SKELETON_VISIBLE,
+  Z_VEC3,
 } from '../../utils/constants'
 import {Experience} from '../Experience'
 import OffsetAnimController from '../Utils/OffsetAnimController'
 
+const modelScale = 0.01
 const rootBoneName = 'Hips'
 const modelDummyVec3 = new Vector3()
 const rootBoneDummyVec3 = new Vector3()
-const dummyVec3 = new Vector3()
-const zeroVec3 = new Vector3()
 
 export class Character {
   scene
@@ -30,7 +29,6 @@ export class Character {
   rootBone?: Object3D
   animModelArr: Group[]
   animMixer: AnimationMixer
-  rb?: RAPIER.RigidBody
   offsetAnimController?: OffsetAnimController
   direction
   isJumping
@@ -45,7 +43,7 @@ export class Character {
     this.rapierPhysics = experience.rapierPhysics
     const items = experience.loaders?.items
     this.model = items?.masculineTPoseModel
-    this.model.scale.multiplyScalar(0.01)
+    this.model.scale.multiplyScalar(modelScale)
     this.model.userData = {rootBoneName}
     this.rootBone = this.model.getObjectByName(rootBoneName)
     this.animModelArr = [
@@ -83,11 +81,10 @@ export class Character {
     if (!this.scene || !this.model || !this.rapierPhysics) {
       return
     }
-    console.log('test: this.model:', this.model)
     if (IS_SKELETON_VISIBLE) {
       this.scene.add(new SkeletonHelper(this.model))
     }
-    this.rb = this.rapierPhysics.createCapsulesRigidBody({
+    this.rapierPhysics.createCapsulesRigidBody({
       object3d: this.model,
       capsuleInfoArr: [{halfHeight: 0.5, radius: 0.5, position: [0, 0, 0]}],
       enabledRotations: [false, true, false],
@@ -103,26 +100,22 @@ export class Character {
 
   update() {
     if (this.rootBone) {
-      this.model.getWorldPosition(modelDummyVec3)
-      this.rootBone.getWorldPosition(rootBoneDummyVec3)
-      dummyVec3.copy(rootBoneDummyVec3)
-      modelDummyVec3.y = dummyVec3.y
-      const distance = modelDummyVec3.distanceTo(rootBoneDummyVec3)
-      dummyVec3.add(BACK_DIRECTION_VEC3.multiplyScalar(distance))
-      this.model.position.copy(dummyVec3)
+      this.model.getWorldPosition(rootBoneDummyVec3)
+      const distance = this.rootBone.position.z * modelScale
+      const offset = Z_VEC3.clone().multiplyScalar(-distance)
+      rootBoneDummyVec3.add(offset)
+      modelDummyVec3
+          .copy(rootBoneDummyVec3)
+          .add(BACK_DIRECTION_VEC3.multiplyScalar(distance))
+      this.model.position.copy(modelDummyVec3)
       this.model.lookAt(rootBoneDummyVec3)
-    }
-
-    const position = this.model.children[0].position
-    if (!position.equals(zeroVec3)) {
-      console.log('test: position:', position)
     }
 
     if (!this.time || !this.animMixer) {
       return
     }
     this.animMixer.update(this.time.delta * 0.001)
-    if (!this.keyboard || !this.rb) {
+    if (!this.keyboard) {
       return
     }
     const {isFront, isLeft, isBack, isRight, isFast, isJump} = this.keyboard

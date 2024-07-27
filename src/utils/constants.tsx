@@ -10,6 +10,7 @@ export const AXES_LENGTH = 10
 export const LIGHT_COLOR = '#FFF'
 export const LIGHT_INTENSITY = 0.2
 export const Y_VEC3 = new Vector3(0, 1, 0)
+export const Z_VEC3 = new Vector3(0, 0, 1)
 export const CAMERA_OFFSET = new Vector3(0, 1, 5)
 export const FRONT_DIRECTION_VEC3 = new Vector3(0, 0, -1)
 export const BACK_DIRECTION_VEC3 = new Vector3(0, 0, 1)
