@@ -17,6 +17,7 @@ import OffsetAnimController from '../Utils/OffsetAnimController'
 const modelScale = 0.01
 const rootBoneName = 'Hips'
 const modelDummyVec3 = new Vector3()
+const rootBoneDummyVec3 = new Vector3()
 
 export class Character {
   scene
@@ -98,9 +99,11 @@ export class Character {
 
   update() {
     if (this.rootBone) {
-      const x = this.rootBone.position.x * this.model.scale.x
-      const y = this.model.position.y
-      const z = this.rootBone.position.z * this.model.scale.z
+      this.model.getWorldPosition(modelDummyVec3)
+      this.rootBone.getWorldPosition(rootBoneDummyVec3)
+      const x = rootBoneDummyVec3.x - modelDummyVec3.x
+      const y = modelDummyVec3.y
+      const z = rootBoneDummyVec3.z - modelDummyVec3.z
       this.model.position.x += x
       this.model.position.y = 0
       this.model.position.z += z
