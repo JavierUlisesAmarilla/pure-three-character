@@ -97,12 +97,19 @@ export class Character {
   }
 
   update() {
-    this.model.getWorldPosition(modelDummyVec3)
-    modelDummyVec3.add(FRONT_DIRECTION_VEC3)
-    this.model.lookAt(modelDummyVec3)
-
     if (this.rootBone) {
-      // TODO
+      const x = this.rootBone.position.x * this.model.scale.x
+      const y = this.model.position.y
+      const z = this.rootBone.position.z * this.model.scale.z
+      this.model.position.x += x
+      this.model.position.y = 0
+      this.model.position.z += z
+      this.model.getWorldPosition(modelDummyVec3)
+      modelDummyVec3.add(FRONT_DIRECTION_VEC3)
+      this.model.lookAt(modelDummyVec3)
+      this.model.position.x -= x
+      this.model.position.y = y
+      this.model.position.z -= z
     }
 
     if (!this.time || !this.animMixer) {

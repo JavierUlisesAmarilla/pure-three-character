@@ -1,6 +1,6 @@
 import {AxesHelper, Scene} from 'three'
 
-import {assetArr, AXES_LENGTH, IS_AXES_HELPER_VISIBLE, IS_PHYSICS_HELPER_VISIBLE} from '../utils/constants'
+import {assetArr, AXES_LENGTH, IS_AXES_HELPER_VISIBLE} from '../utils/constants'
 import {Camera} from './Camera'
 import {Environment} from './Environment'
 import {Light} from './Light'
@@ -80,7 +80,7 @@ export class Experience {
 
   update() {
     this.world?.update()
-    this.rapierPhysics?.update(IS_PHYSICS_HELPER_VISIBLE)
+    // this.rapierPhysics?.update(IS_PHYSICS_HELPER_VISIBLE)
     this.camera?.update()
     this.renderer?.update()
   }
