@@ -8,9 +8,8 @@ import {
 } from 'three'
 
 import {
-  BACK_DIRECTION_VEC3,
+  FRONT_DIRECTION_VEC3,
   IS_SKELETON_VISIBLE,
-  Z_VEC3,
 } from '../../utils/constants'
 import {Experience} from '../Experience'
 import OffsetAnimController from '../Utils/OffsetAnimController'
@@ -18,7 +17,6 @@ import OffsetAnimController from '../Utils/OffsetAnimController'
 const modelScale = 0.01
 const rootBoneName = 'Hips'
 const modelDummyVec3 = new Vector3()
-const rootBoneDummyVec3 = new Vector3()
 
 export class Character {
   scene
@@ -99,16 +97,12 @@ export class Character {
   }
 
   update() {
+    this.model.getWorldPosition(modelDummyVec3)
+    modelDummyVec3.add(FRONT_DIRECTION_VEC3)
+    this.model.lookAt(modelDummyVec3)
+
     if (this.rootBone) {
-      this.model.getWorldPosition(rootBoneDummyVec3)
-      const distance = this.rootBone.position.z * modelScale
-      const offset = Z_VEC3.clone().multiplyScalar(-distance)
-      rootBoneDummyVec3.add(offset)
-      modelDummyVec3
-          .copy(rootBoneDummyVec3)
-          .add(BACK_DIRECTION_VEC3.multiplyScalar(distance))
-      this.model.position.copy(modelDummyVec3)
-      this.model.lookAt(rootBoneDummyVec3)
+      // TODO
     }
 
     if (!this.time || !this.animMixer) {
