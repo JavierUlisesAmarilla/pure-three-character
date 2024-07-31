@@ -16,6 +16,7 @@ const rotSpeed = 0.006
 const limitRotXFactor = 0.2
 const centerVec3 = new Vector3()
 const dummyVec3 = new Vector3()
+const dummyEuler = new Euler(0, 0, 0, 'ZYX')
 
 export class Camera {
   instance?: PerspectiveCamera
@@ -121,9 +122,8 @@ export class Camera {
         this.instance.position.copy(centerVec3)
       }
 
-      this.instance.quaternion.setFromEuler(
-          new Euler(this.cameraRotX, this.cameraRotY, 0, 'ZYX'),
-      )
+      dummyEuler.set(this.cameraRotX, this.cameraRotY, 0)
+      this.instance.quaternion.setFromEuler(dummyEuler)
       this.instance.position.add(
           dummyVec3.copy(CAMERA_OFFSET).applyQuaternion(this.instance.quaternion),
       )

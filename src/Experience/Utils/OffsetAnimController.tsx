@@ -9,7 +9,7 @@ import {
 
 import {AnimationActionMap, BoneTransformsType} from '../../utils/types'
 
-const vec3 = new Vector3()
+const dummyVec3 = new Vector3()
 
 export default class OffsetAnimController {
   model: Object3D
@@ -58,8 +58,8 @@ export default class OffsetAnimController {
     const transforms = this.getBoneTransforms()
 
     if (this.rootBone && this.rootBonePosition0) {
-      this.rootBone.getWorldPosition(vec3)
-      this.model.position.add(this.rootBonePosition0.sub(vec3).negate())
+      this.rootBone.getWorldPosition(dummyVec3)
+      this.model.position.add(this.rootBonePosition0.sub(dummyVec3).negate())
     }
 
     this.actions[this.curActionName].stop()

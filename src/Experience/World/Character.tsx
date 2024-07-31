@@ -30,10 +30,8 @@ export class Character {
   animModelArr: Group[]
   animMixer: AnimationMixer
   offsetAnimController?: OffsetAnimController
-  direction
   isJumping
   moveState!: string
-  walkSpeed
 
   constructor() {
     const experience = new Experience()
@@ -54,9 +52,7 @@ export class Character {
       items?.mJogJump001Model,
     ]
     this.animMixer = new AnimationMixer(this.model)
-    this.direction = new Vector3()
     this.isJumping = false
-    this.walkSpeed = 0.05
     this.initAnim()
     this.initModel()
   }
