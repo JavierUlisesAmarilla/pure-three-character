@@ -18,6 +18,7 @@ const modelScale = 0.01
 const rootBoneName = 'Hips'
 const modelDummyVec3 = new Vector3()
 const rootBoneDummyVec3 = new Vector3()
+const offsetVec3 = new Vector3()
 
 export class Character {
   scene
@@ -101,18 +102,16 @@ export class Character {
     if (this.rootBone) {
       this.model.getWorldPosition(modelDummyVec3)
       this.rootBone.getWorldPosition(rootBoneDummyVec3)
-      const x = rootBoneDummyVec3.x - modelDummyVec3.x
-      const y = modelDummyVec3.y
-      const z = rootBoneDummyVec3.z - modelDummyVec3.z
-      this.model.position.x += x
-      this.model.position.y = 0
-      this.model.position.z += z
+      offsetVec3.set(
+          modelDummyVec3.x - rootBoneDummyVec3.x,
+          0,
+          modelDummyVec3.z - rootBoneDummyVec3.z,
+      )
+      this.model.position.sub(offsetVec3)
       this.model.getWorldPosition(modelDummyVec3)
       modelDummyVec3.add(FRONT_DIRECTION_VEC3)
       this.model.lookAt(modelDummyVec3)
-      this.model.position.x -= x
-      this.model.position.y = y
-      this.model.position.z -= z
+      this.model.position.add(offsetVec3)
     }
 
     if (!this.time || !this.animMixer) {
