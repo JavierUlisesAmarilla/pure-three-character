@@ -2,7 +2,6 @@ import {
   AnimationClip,
   AnimationMixer,
   Group,
-  Object3D,
   SkeletonHelper,
   Vector3,
 } from 'three'
@@ -15,10 +14,8 @@ import {Experience} from '../Experience'
 import OffsetAnimController from '../Utils/OffsetAnimController'
 
 const modelScale = 0.01
-const rootBoneName = 'Hips'
 const modelDummyVec3 = new Vector3()
-const rootBoneDummyVec3 = new Vector3()
-const offsetVec3 = new Vector3()
+const rootBoneName = 'Hips'
 
 export class Character {
   scene
@@ -26,7 +23,7 @@ export class Character {
   keyboard
   rapierPhysics
   model: Group
-  rootBone?: Object3D
+  root: Group
   animModelArr: Group[]
   animMixer: AnimationMixer
   offsetAnimController?: OffsetAnimController
@@ -42,8 +39,8 @@ export class Character {
     const items = experience.loaders?.items
     this.model = items?.masculineTPoseModel
     this.model.scale.multiplyScalar(modelScale)
-    this.model.userData = {rootBoneName}
-    this.rootBone = this.model.getObjectByName(rootBoneName)
+    this.root = new Group()
+    this.root.add(this.model)
     this.animModelArr = [
       items?.fStandingIdle001Model,
       items?.fWalk002Model,
@@ -66,11 +63,10 @@ export class Character {
       clipArr.push(animModel.animations[0])
     })
     this.offsetAnimController = new OffsetAnimController({
-      mixer: this.animMixer,
+      root: this.root,
+      rootBoneName,
       clipArr,
-      rootBone: this.rootBone,
     })
-    this.updateAnim('F_Standing_Idle_001')
   }
 
   initModel() {
@@ -81,8 +77,8 @@ export class Character {
       this.scene.add(new SkeletonHelper(this.model))
     }
     this.rapierPhysics.createCapsulesRigidBody({
-      object3d: this.model,
-      capsuleInfoArr: [{halfHeight: 0.5, radius: 0.5, position: [0, 0, 0]}],
+      object3d: this.root,
+      capsuleInfoArr: [{halfHeight: 0.5, radius: 0.5, position: [0, 1, 0]}],
       enabledRotations: [false, true, false],
     })
   }
@@ -95,25 +91,13 @@ export class Character {
   }
 
   update() {
-    if (this.rootBone) {
-      this.model.getWorldPosition(modelDummyVec3)
-      this.rootBone.getWorldPosition(rootBoneDummyVec3)
-      offsetVec3.set(
-          modelDummyVec3.x - rootBoneDummyVec3.x,
-          0,
-          modelDummyVec3.z - rootBoneDummyVec3.z,
-      )
-      this.model.position.sub(offsetVec3)
-      this.model.getWorldPosition(modelDummyVec3)
-      modelDummyVec3.add(FRONT_DIRECTION_VEC3)
-      this.model.lookAt(modelDummyVec3)
-      this.model.position.add(offsetVec3)
-    }
-
-    if (!this.time || !this.animMixer) {
+    this.root.getWorldPosition(modelDummyVec3)
+    modelDummyVec3.add(FRONT_DIRECTION_VEC3)
+    this.root.lookAt(modelDummyVec3)
+    if (!this.time || !this.offsetAnimController) {
       return
     }
-    this.animMixer.update(this.time.delta * 0.001)
+    this.offsetAnimController.update(this.time.delta * 0.001)
     if (!this.keyboard) {
       return
     }

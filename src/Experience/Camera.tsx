@@ -1,4 +1,4 @@
-import {Euler, Object3D, PerspectiveCamera, Vector3} from 'three'
+import {Euler, PerspectiveCamera, Vector3} from 'three'
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
 
 import {
@@ -23,8 +23,7 @@ export class Camera {
   canvas
   size
   scene
-  model
-  rootBone?: Object3D
+  character
   cameraRotX
   cameraRotY
   controls?: OrbitControls
@@ -34,8 +33,7 @@ export class Camera {
     this.canvas = experience.canvas
     this.size = experience.size
     this.scene = experience.scene
-    this.model = experience.world?.character.model
-    this.rootBone = experience.world?.character.rootBone
+    this.character = experience.world?.character.root
     this.cameraRotX = 0
     this.cameraRotY = 0
     this.initInstance()
@@ -73,8 +71,7 @@ export class Camera {
       document.addEventListener('mousemove', (event) => {
         if (
           document.pointerLockElement === document.body &&
-          this.instance &&
-          this.model
+          this.instance
         ) {
           let {movementX, movementY} = event
           if (movementX > 0) {
@@ -113,15 +110,8 @@ export class Camera {
   }
 
   update() {
-    if (!IS_ORBIT_CONTROLS_USED && this.instance && this.model) {
-      if (this.rootBone) {
-        this.rootBone.getWorldPosition(centerVec3)
-        this.instance.position.copy(centerVec3)
-      } else {
-        this.model.getWorldPosition(centerVec3)
-        this.instance.position.copy(centerVec3)
-      }
-
+    if (!IS_ORBIT_CONTROLS_USED && this.instance && this.character) {
+      this.character.getWorldPosition(this.instance.position)
       dummyEuler.set(this.cameraRotX, this.cameraRotY, 0)
       this.instance.quaternion.setFromEuler(dummyEuler)
       this.instance.position.add(

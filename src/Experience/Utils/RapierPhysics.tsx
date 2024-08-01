@@ -18,9 +18,8 @@ type CapsuleInfoType = {
   position: number[];
 };
 
-const object3dPosition = new THREE.Vector3()
-const rootWorldPosition = new THREE.Vector3()
-const colliderPosition = new THREE.Vector3()
+const object3dDummyVec3 = new THREE.Vector3()
+const colliderDummyVec3 = new THREE.Vector3()
 
 export class RapierPhysics {
   rapierWorld?: RAPIER.World
@@ -74,20 +73,10 @@ export class RapierPhysics {
       const object3d = this.rb2object3d.get(elt.handle)
 
       if (object3d) {
-        object3d.getWorldPosition(colliderPosition)
-
-        if (object3d.userData.rootBoneName) {
-          const rootBone = object3d.getObjectByName(
-              object3d.userData.rootBoneName,
-          )
-          if (rootBone) {
-            rootBone.getWorldPosition(colliderPosition)
-            const translation = elt.translation()
-            colliderPosition.y = translation.y
-          }
-        }
-
-        elt.setTranslation(colliderPosition, true)
+        object3d.getWorldPosition(colliderDummyVec3)
+        const translation = elt.translation()
+        colliderDummyVec3.y = translation.y
+        elt.setTranslation(colliderDummyVec3, true)
       }
     })
 
@@ -99,20 +88,8 @@ export class RapierPhysics {
       const object3d = this.rb2object3d.get(elt.handle)
 
       if (object3d) {
-        object3dPosition.set(translation.x, translation.y, translation.z)
-
-        if (object3d.userData.rootBoneName) {
-          const rootBone = object3d.getObjectByName(
-              object3d.userData.rootBoneName,
-          )
-
-          if (rootBone) {
-            rootBone.getWorldPosition(rootWorldPosition)
-            object3dPosition.sub(rootWorldPosition.sub(object3d.position))
-          }
-        }
-
-        object3d.position.copy(object3dPosition)
+        object3dDummyVec3.set(translation.x, translation.y, translation.z)
+        object3d.position.copy(object3dDummyVec3)
         object3d.updateMatrix()
       }
     })

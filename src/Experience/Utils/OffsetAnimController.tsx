@@ -9,36 +9,61 @@ import {
 
 import {AnimationActionMap, BoneTransformsType} from '../../utils/types'
 
-const dummyVec3 = new Vector3()
+const rootBoneDummyVec3 = new Vector3()
 
 export default class OffsetAnimController {
+  root: Object3D
   model: Object3D
   rootBone?: Object3D
-  rootBonePosition0: Vector3
   mixer: AnimationMixer
   actions: AnimationActionMap
   curActionName?: string
-  transitionDuration: number
   timeline?: gsap.core.Timeline
+  transitionDuration: number
 
   constructor({
-    mixer,
+    root,
+    rootBoneName,
     clipArr,
-    rootBone,
   }: {
-    mixer: AnimationMixer;
+    root: Object3D;
+    rootBoneName?: string;
     clipArr: AnimationClip[];
-    rootBone?: Object3D;
   }) {
-    this.mixer = mixer
+    this.root = root
+    this.model = this.root.children[0]
+
+    if (rootBoneName) {
+      const rootBone = this.model.getObjectByName(rootBoneName)
+      if (rootBone) {
+        this.rootBone = rootBone
+      }
+    }
+
+    this.mixer = new AnimationMixer(this.model)
+    this.mixer.addEventListener('loop', () => {
+      this.model.position.set(0, 0, 0)
+    })
     this.actions = {}
     clipArr.forEach((clip) => {
       this.actions[clip.name] = this.mixer.clipAction(clip)
     })
-    this.model = this.mixer.getRoot() as Object3D
-    this.rootBone = rootBone
-    this.rootBonePosition0 = new Vector3()
     this.transitionDuration = 0.08
+  }
+
+  update(delta: number) {
+    this.mixer.update(delta)
+
+    if (this.rootBone) {
+      this.rootBone.getWorldPosition(rootBoneDummyVec3)
+      rootBoneDummyVec3.setY(0)
+      this.root.position.copy(rootBoneDummyVec3)
+      this.model.position.set(
+          -this.rootBone.position.x * this.model.scale.x,
+          0,
+          -this.rootBone.position.z * this.model.scale.z,
+      )
+    }
   }
 
   playNewAction(actionName: string) {
@@ -56,12 +81,7 @@ export default class OffsetAnimController {
     }
     this.timeline?.kill()
     const transforms = this.getBoneTransforms()
-
-    if (this.rootBone && this.rootBonePosition0) {
-      this.rootBone.getWorldPosition(dummyVec3)
-      this.model.position.add(this.rootBonePosition0.sub(dummyVec3).negate())
-    }
-
+    this.model.position.set(0, 0, 0)
     this.actions[this.curActionName].stop()
     this.setBoneTransforms(transforms)
   }
@@ -96,11 +116,11 @@ export default class OffsetAnimController {
   }
 
   playAction(actionName: string) {
+    // Get action's first bone transforms
     const oldTransforms = this.getBoneTransforms()
     this.actions[actionName].play()
     this.mixer.update(0)
     const newTransforms = this.getBoneTransforms()
-    this.rootBone?.getWorldPosition(this.rootBonePosition0)
     this.actions[actionName].stop()
     this.setBoneTransforms(oldTransforms)
 
