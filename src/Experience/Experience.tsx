@@ -1,6 +1,6 @@
 import {AxesHelper, Scene} from 'three'
 
-import {assetArr, AXES_LENGTH, IS_DEV_MODE} from '../utils/constants'
+import {assetArr, AXES_LENGTH, IS_AXES_HELPER_VISIBLE, IS_PHYSICS_HELPER_VISIBLE} from '../utils/constants'
 import {Camera} from './Camera'
 import {Environment} from './Environment'
 import {Light} from './Light'
@@ -57,7 +57,7 @@ export class Experience {
       this.world = new World()
       this.camera = new Camera()
       this.renderer = new Renderer()
-      if (IS_DEV_MODE) {
+      if (IS_AXES_HELPER_VISIBLE) {
         this.scene.add(new AxesHelper(AXES_LENGTH))
       }
       this.size.on('resize', () => {
@@ -79,8 +79,8 @@ export class Experience {
   }
 
   update() {
-    this.rapierPhysics?.update(IS_DEV_MODE)
     this.world?.update()
+    this.rapierPhysics?.update(IS_PHYSICS_HELPER_VISIBLE)
     this.camera?.update()
     this.renderer?.update()
   }

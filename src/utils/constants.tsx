@@ -2,7 +2,20 @@ import {Vector3} from 'three'
 
 import {AssetType} from './types'
 
-export const IS_DEV_MODE = false
+export const IS_AXES_HELPER_VISIBLE = true
+export const IS_PHYSICS_HELPER_VISIBLE = false
+export const IS_ORBIT_CONTROLS_USED = false
+export const IS_SKELETON_VISIBLE = false
+export const AXES_LENGTH = 10
+export const LIGHT_COLOR = '#FFF'
+export const LIGHT_INTENSITY = 0.2
+export const Y_VEC3 = new Vector3(0, 1, 0)
+export const Z_VEC3 = new Vector3(0, 0, 1)
+export const CAMERA_OFFSET = new Vector3(0, 1, 5)
+export const FRONT_DIRECTION_VEC3 = new Vector3(0, 0, -1)
+export const BACK_DIRECTION_VEC3 = new Vector3(0, 0, 1)
+export const LEFT_DIRECTION_VEC3 = new Vector3(-1, 0, 0)
+export const RIGHT_DIRECTION_VEC3 = new Vector3(1, 0, 0)
 
 export const assetArr: AssetType[] = [
   // {
@@ -51,14 +64,3 @@ export const assetArr: AssetType[] = [
     path: 'models/ready_player_me/animations/M_Jog_Jump_001.fbx',
   },
 ]
-
-export const LIGHT_COLOR = '#FFF'
-export const LIGHT_INTENSITY = 0.2
-export const AXES_LENGTH = 10
-export const IS_ORBIT_CONTROLS_USED = true
-export const Y_VEC3 = new Vector3(0, 1, 0)
-export const CAMERA_OFFSET = new Vector3(0, 1, 5)
-export const FRONT_DIRECTION_VEC3 = new Vector3(0, 0, -1)
-export const BACK_DIRECTION_VEC3 = new Vector3(0, 0, 1)
-export const LEFT_DIRECTION_VEC3 = new Vector3(-1, 0, 0)
-export const RIGHT_DIRECTION_VEC3 = new Vector3(1, 0, 0)

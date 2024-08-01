@@ -1,22 +1,21 @@
-import RAPIER from '@dimforge/rapier3d-compat'
 import {
-  AnimationAction,
+  AnimationClip,
   AnimationMixer,
-  CapsuleGeometry,
   Group,
-  Mesh,
-  Object3D,
+  SkeletonHelper,
   Vector3,
 } from 'three'
 
 import {
-  BACK_DIRECTION_VEC3,
   FRONT_DIRECTION_VEC3,
-  LEFT_DIRECTION_VEC3,
-  RIGHT_DIRECTION_VEC3,
+  IS_SKELETON_VISIBLE,
 } from '../../utils/constants'
 import {Experience} from '../Experience'
-import AnimController from '../Utils/AnimController'
+import OffsetAnimController from '../Utils/OffsetAnimController'
+
+const modelScale = 0.01
+const modelDummyVec3 = new Vector3()
+const rootBoneName = 'Hips'
 
 export class Character {
   scene
@@ -24,15 +23,12 @@ export class Character {
   keyboard
   rapierPhysics
   model: Group
+  root: Group
   animModelArr: Group[]
   animMixer: AnimationMixer
-  rb?: RAPIER.RigidBody
-  animController?: AnimController
-  direction
+  offsetAnimController?: OffsetAnimController
   isJumping
-  dummy
   moveState!: string
-  walkSpeed
 
   constructor() {
     const experience = new Experience()
@@ -42,7 +38,9 @@ export class Character {
     this.rapierPhysics = experience.rapierPhysics
     const items = experience.loaders?.items
     this.model = items?.masculineTPoseModel
-    this.model.scale.multiplyScalar(0.01)
+    this.model.scale.multiplyScalar(modelScale)
+    this.root = new Group()
+    this.root.add(this.model)
     this.animModelArr = [
       items?.fStandingIdle001Model,
       items?.fWalk002Model,
@@ -51,90 +49,59 @@ export class Character {
       items?.mJogJump001Model,
     ]
     this.animMixer = new AnimationMixer(this.model)
-    this.direction = new Vector3()
     this.isJumping = false
-    this.dummy = new Object3D()
-    this.walkSpeed = 0.05
-    this.initModel()
     this.initAnim()
-  }
-
-  initModel() {
-    if (!this.scene || !this.model || !this.rapierPhysics) {
-      return
-    }
-    const object3d = new Object3D()
-    object3d.add(this.model)
-    const capsuleMesh = new Mesh(new CapsuleGeometry(0.5, 1))
-    capsuleMesh.position.y = 1
-    capsuleMesh.visible = false
-    capsuleMesh.name = 'character'
-    object3d.add(capsuleMesh)
-    this.model.rotation.set(0, Math.PI, 0)
-    this.rb = this.rapierPhysics.createCapsulesRigidBody({
-      object3d,
-      capsuleInfoArr: [{halfHeight: 0.5, radius: 0.5, position: [0, 1, 0]}],
-      enabledRotations: [false, true, false],
-    })
+    this.initModel()
   }
 
   initAnim() {
     if (!this.animMixer) {
       return
     }
-    const animActions: { [key: string]: AnimationAction } = {}
+    const clipArr: AnimationClip[] = []
     this.animModelArr.forEach((animModel) => {
-      const anim = animModel.animations[0]
-      animActions[anim.name] = this.animMixer.clipAction(anim)
+      clipArr.push(animModel.animations[0])
     })
-    console.log('test: animActions:', animActions)
-    this.animController = new AnimController(this.animMixer, animActions)
-    this.updateAnim('F_Standing_Idle_001')
+    this.offsetAnimController = new OffsetAnimController({
+      root: this.root,
+      rootBoneName,
+      clipArr,
+    })
   }
 
-  setDirection = (speed: number) => {
-    if (!this.keyboard) {
+  initModel() {
+    if (!this.scene || !this.model || !this.rapierPhysics) {
       return
     }
-    this.direction.set(0, 0, 0)
-    if (this.keyboard.isFront) {
-      this.direction.add(FRONT_DIRECTION_VEC3.clone().multiplyScalar(speed))
+    if (IS_SKELETON_VISIBLE) {
+      this.scene.add(new SkeletonHelper(this.model))
     }
-    if (this.keyboard.isLeft) {
-      this.direction.add(LEFT_DIRECTION_VEC3.clone().multiplyScalar(speed))
-    }
-    if (this.keyboard.isBack) {
-      this.direction.add(BACK_DIRECTION_VEC3.clone().multiplyScalar(speed))
-    }
-    if (this.keyboard.isRight) {
-      this.direction.add(RIGHT_DIRECTION_VEC3.clone().multiplyScalar(speed))
-    }
+    this.rapierPhysics.createCapsulesRigidBody({
+      object3d: this.root,
+      capsuleInfoArr: [{halfHeight: 0.5, radius: 0.5, position: [0, 1, 0]}],
+      enabledRotations: [false, true, false],
+    })
   }
 
   updateAnim(animName: string) {
-    if (this.moveState !== animName && this.animController) {
+    if (this.moveState !== animName && this.offsetAnimController) {
       this.moveState = animName
-      this.animController.playNewActionOnly(animName)
+      this.offsetAnimController.playNewAction(animName)
     }
   }
 
   update() {
-    if (!this.time || !this.animMixer) {
+    this.root.getWorldPosition(modelDummyVec3)
+    modelDummyVec3.add(FRONT_DIRECTION_VEC3)
+    this.root.lookAt(modelDummyVec3)
+    if (!this.time || !this.offsetAnimController) {
       return
     }
-    this.animMixer.update(this.time.delta * 0.001)
-    if (!this.keyboard || !this.rb) {
+    this.offsetAnimController.update(this.time.delta * 0.001)
+    if (!this.keyboard) {
       return
     }
     const {isFront, isLeft, isBack, isRight, isFast, isJump} = this.keyboard
-
-    const rbTranslation = this.rb.translation()
-    const rbPos = new Vector3(
-        rbTranslation.x,
-        rbTranslation.y,
-        rbTranslation.z,
-    )
-    this.dummy.position.copy(rbPos)
 
     if (isJump && !this.isJumping) {
       this.isJumping = true
@@ -143,12 +110,6 @@ export class Character {
       } else {
         this.updateAnim('F_Walk_Jump_002')
       }
-      // this.rb.applyImpulse(Y_VEC3.clone().multiplyScalar(15), true)
-
-      setTimeout(() => {
-        this.isJumping = false
-        this.updateAnim('F_Standing_Idle_001')
-      }, 3000)
     }
 
     if (
@@ -156,24 +117,14 @@ export class Character {
       (isFront !== isBack || isLeft !== isRight)
     ) {
       if (isFast) {
-        this.setDirection(this.walkSpeed * 3)
         if (!this.isJumping) {
           this.updateAnim('M_Jog_001')
         }
-      } else {
-        this.setDirection(this.walkSpeed)
-        if (!this.isJumping) {
-          this.updateAnim('F_Walk_002')
-        }
+      } else if (!this.isJumping) {
+        this.updateAnim('F_Walk_002')
       }
-
-      // const nextRbPos = rbPos.clone().add(this.direction)
-      // this.rb.setTranslation(nextRbPos, true)
-      this.dummy.lookAt(rbPos.clone().sub(this.direction))
     } else if (!this.isJumping) {
       this.updateAnim('F_Standing_Idle_001')
     }
-
-    this.rb.setRotation(this.dummy.quaternion, true)
   }
 }
