@@ -100,11 +100,13 @@ export class RapierPhysics {
     enabledRotations,
     mesh,
     scale = 1,
+    position = [0, 0, 0],
   }: {
     descriptor?: DescriptorType;
     enabledRotations?: boolean[];
     mesh: THREE.Mesh;
     scale?: number;
+    position?: number[];
   }) {
     if (!this.rapierWorld) {
       return
@@ -117,6 +119,7 @@ export class RapierPhysics {
     const body = this.createRigidBody({
       descriptor,
       enabledRotations,
+      position,
     })
     if (!body) {
       return
@@ -137,15 +140,18 @@ export class RapierPhysics {
     enabledRotations,
     object3d,
     ballInfoArr,
+    position = [0, 0, 0],
   }: {
     descriptor?: DescriptorType;
     enabledRotations?: boolean[];
     object3d: THREE.Object3D;
     ballInfoArr: Array<BallInfoType>;
+    position?: number[];
   }) {
     const body = this.createRigidBody({
       descriptor,
       enabledRotations,
+      position,
     })
     if (!body) {
       return
@@ -176,6 +182,7 @@ export class RapierPhysics {
     angularDamping,
     object3d,
     capsuleInfoArr,
+    position = [0, 0, 0],
   }: {
     descriptor?: DescriptorType;
     enabledRotations?: boolean[];
@@ -184,6 +191,7 @@ export class RapierPhysics {
     angularDamping?: number;
     object3d: THREE.Object3D;
     capsuleInfoArr: Array<CapsuleInfoType>;
+    position?: number[];
   }) {
     const body = this.createRigidBody({
       descriptor,
@@ -191,6 +199,7 @@ export class RapierPhysics {
       mass,
       linearDamping,
       angularDamping,
+      position,
     })
     if (!body) {
       return
@@ -222,12 +231,14 @@ export class RapierPhysics {
     mass,
     linearDamping,
     angularDamping,
+    position = [0, 0, 0],
   }: {
     descriptor?: DescriptorType;
     enabledRotations?: boolean[];
     mass?: number;
     linearDamping?: number;
     angularDamping?: number;
+    position?: number[];
   }) {
     if (!this.rapierWorld) {
       return
@@ -239,6 +250,7 @@ export class RapierPhysics {
       linearDamping,
       angularDamping,
     })
+    bodyDesc.setTranslation(position[0], position[1], position[2])
     const body = this.rapierWorld.createRigidBody(bodyDesc)
     return body
   }
