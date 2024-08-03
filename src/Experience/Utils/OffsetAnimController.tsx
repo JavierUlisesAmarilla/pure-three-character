@@ -48,6 +48,7 @@ export default class OffsetAnimController {
     clipArr.forEach((clip) => {
       this.actions[clip.name] = this.mixer.clipAction(clip)
     })
+    console.log('test: this.actions:', this.actions)
     this.transitionDuration = 0.08
   }
 
