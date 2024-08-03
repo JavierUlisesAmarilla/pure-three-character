@@ -114,32 +114,36 @@ export class Character {
       if (isFast) {
         if (isFront) {
           if (isJump) {
-            //
+            this.updateAnim('M_Jog_Jump_001')
+          } else {
+            this.updateAnim('M_Jog_001')
           }
         }
         if (isBack) {
-          //
+          this.updateAnim('M_Jog_Backwards_001')
         }
         if (isLeft) {
-          //
+          this.updateAnim('M_Jog_Strafe_Left_001')
         }
         if (isRight) {
-          //
+          this.updateAnim('M_Jog_Strafe_Right_001')
         }
       } else {
         if (isFront) {
           if (isJump) {
-            //
+            this.updateAnim('F_Walk_Jump_002')
+          } else {
+            this.updateAnim('F_Walk_002')
           }
         }
         if (isBack) {
-          //
+          this.updateAnim('F_Walk_Backwards_001')
         }
         if (isLeft) {
-          //
+          this.updateAnim('F_Walk_Strafe_Left_001')
         }
         if (isRight) {
-          //
+          this.updateAnim('F_Walk_Strafe_Right_001')
         }
       }
     } else {
