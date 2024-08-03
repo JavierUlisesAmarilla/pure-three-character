@@ -179,7 +179,7 @@ export default class OffsetAnimController {
       }
     })
 
-    this.timeline.to(null, {
+    this.timeline.to(rootBoneDummyVec3, {
       duration: this.transitionDuration,
       onComplete,
     })
