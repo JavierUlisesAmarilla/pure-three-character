@@ -107,6 +107,7 @@ export class Character {
     if (!this.keyboard) {
       return
     }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- TODO
     const {isFront, isLeft, isBack, isRight, isFast, isJump} = this.keyboard
 
     if (
@@ -115,11 +116,11 @@ export class Character {
     ) {
       if (isFast) {
         if (isFront) {
-          if (isJump) {
-            this.updateAnim('M_Jog_Jump_001')
-          } else {
-            this.updateAnim('M_Jog_001')
-          }
+          // if (isJump) {
+          //   this.updateAnim('M_Jog_Jump_001')
+          // } else {
+          this.updateAnim('M_Jog_001')
+          // }
         } else if (isBack) {
           this.updateAnim('M_Jog_Backwards_001')
         } else if (isLeft) {
@@ -128,11 +129,11 @@ export class Character {
           this.updateAnim('M_Jog_Strafe_Right_001')
         }
       } else if (isFront) {
-        if (isJump) {
-          this.updateAnim('F_Walk_Jump_002')
-        } else {
-          this.updateAnim('F_Walk_002')
-        }
+        // if (isJump) {
+        //   this.updateAnim('F_Walk_Jump_002')
+        // } else {
+        this.updateAnim('F_Walk_002')
+        // }
       } else if (isBack) {
         this.updateAnim('F_Walk_Backwards_001')
       } else if (isLeft) {
