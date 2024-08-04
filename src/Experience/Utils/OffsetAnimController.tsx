@@ -20,15 +20,18 @@ export default class OffsetAnimController {
   curActionName?: string
   timeline?: gsap.core.Timeline
   transitionDuration: number
+  exceptTransitionBoneNameArr: string[]
 
   constructor({
     root,
     rootBoneName,
     clipArr,
+    exceptTransitionBoneNameArr,
   }: {
     root: Object3D;
     rootBoneName?: string;
     clipArr: AnimationClip[];
+    exceptTransitionBoneNameArr?: string[];
   }) {
     this.root = root
     this.model = this.root.children[0]
@@ -48,8 +51,8 @@ export default class OffsetAnimController {
     clipArr.forEach((clip) => {
       this.actions[clip.name] = this.mixer.clipAction(clip)
     })
-    console.log('test: this.actions:', this.actions)
     this.transitionDuration = 0.08
+    this.exceptTransitionBoneNameArr = exceptTransitionBoneNameArr ?? []
   }
 
   update(delta: number) {
@@ -141,6 +144,9 @@ export default class OffsetAnimController {
         const transform = transforms[child.name]
 
         child.skeleton.bones.forEach((bone, idx) => {
+          if (this.exceptTransitionBoneNameArr.indexOf(bone.name) > -1) {
+            return
+          }
           const quaternion = transform[idx].quaternion
           const position = transform[idx].position
           this.timeline?.to(
