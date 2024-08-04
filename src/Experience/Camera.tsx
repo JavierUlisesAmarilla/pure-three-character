@@ -9,7 +9,7 @@ import {
 import {Experience} from './Experience'
 
 const rotSpeed = 0.006
-const limitRotXFactor = 0.2
+const limitRotXFactor = 0.05
 const dummyVec3 = new Vector3()
 const dummyEuler = new Euler(0, 0, 0, 'ZYX')
 
@@ -30,7 +30,7 @@ export class Camera {
     this.scene = experience.scene
     this.character = experience.world?.character.root
     this.cameraRotX = 0
-    this.cameraRotY = 0
+    this.cameraRotY = Math.PI
     this.initInstance()
     this.initControls()
     this.initEvents()
