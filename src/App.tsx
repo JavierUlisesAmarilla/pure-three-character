@@ -52,10 +52,14 @@ export const App = () => {
               <Progress progress={progress}/>
             ) : (
               <div
-                className="w-fit cursor-pointer rounded-full bg-yellow-500 px-3 py-1"
+                className="relative w-fit cursor-pointer rounded bg-indigo-500 px-3 py-1"
                 onClick={() => setHideLoader(true)}
               >
-                Projects
+                <span className="absolute -right-1 -top-1 flex h-3 w-3">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-sky-400 opacity-75"/>
+                  <span className="relative inline-flex h-3 w-3 rounded-full bg-sky-500"/>
+                </span>
+                <div>Projects</div>
               </div>
             )}
           </div>
