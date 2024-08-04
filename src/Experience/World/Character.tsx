@@ -70,6 +70,7 @@ export class Character {
       root: this.root,
       rootBoneName,
       clipArr,
+      transitionDuration: 0,
       // exceptTransitionBoneNameArr: ['LeftUpLeg', 'RightUpLeg', 'LeftShoulder', 'RightShoulder'],
     })
   }

@@ -26,11 +26,13 @@ export default class OffsetAnimController {
     root,
     rootBoneName,
     clipArr,
+    transitionDuration,
     exceptTransitionBoneNameArr,
   }: {
     root: Object3D;
     rootBoneName?: string;
     clipArr: AnimationClip[];
+    transitionDuration?: number;
     exceptTransitionBoneNameArr?: string[];
   }) {
     this.root = root
@@ -51,7 +53,7 @@ export default class OffsetAnimController {
     clipArr.forEach((clip) => {
       this.actions[clip.name] = this.mixer.clipAction(clip)
     })
-    this.transitionDuration = 0.08
+    this.transitionDuration = transitionDuration ?? 0.08
     this.exceptTransitionBoneNameArr = exceptTransitionBoneNameArr ?? []
   }
 
