@@ -4,14 +4,12 @@ import {mergeModelMeshes} from '../../utils/common'
 import {Experience} from '../Experience'
 
 export class Ground {
-  scene
   time
   model?: GLTF
   rapierPhysics
 
   constructor() {
     const experience = new Experience()
-    this.scene = experience.scene
     this.time = experience.time
     this.rapierPhysics = experience.rapierPhysics
     this.model = experience.loaders?.items.capsuleModel
@@ -19,7 +17,7 @@ export class Ground {
   }
 
   initModel() {
-    if (!this.scene || !this.model || !this.rapierPhysics) {
+    if (!this.model || !this.rapierPhysics) {
       return
     }
     const mesh = mergeModelMeshes(this.model.scene)

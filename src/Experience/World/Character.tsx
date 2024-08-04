@@ -27,7 +27,6 @@ export class Character {
   animModelArr: Group[]
   animMixer: AnimationMixer
   offsetAnimController?: OffsetAnimController
-  isJumping
   moveState!: string
 
   constructor() {
@@ -44,12 +43,17 @@ export class Character {
     this.animModelArr = [
       items?.fStandingIdle001Model,
       items?.fWalk002Model,
+      items?.fWalkBackwards001Model,
       items?.fWalkJump002Model,
+      items?.fWalkStrafeLeft001Model,
+      items?.fWalkStrafeRight001Model,
       items?.mJog001Model,
+      items?.mJogBackwards001Model,
       items?.mJogJump001Model,
+      items?.mJogStrafeLeft001Model,
+      items?.mJogStrafeRight001Model,
     ]
     this.animMixer = new AnimationMixer(this.model)
-    this.isJumping = false
     this.initAnim()
     this.initModel()
   }
@@ -103,27 +107,38 @@ export class Character {
     }
     const {isFront, isLeft, isBack, isRight, isFast, isJump} = this.keyboard
 
-    if (isJump && !this.isJumping) {
-      this.isJumping = true
-      if (isFast) {
-        this.updateAnim('M_Jog_Jump_001')
-      } else {
-        this.updateAnim('F_Walk_Jump_002')
-      }
-    }
-
     if (
       (isFront || isBack || isLeft || isRight) &&
       (isFront !== isBack || isLeft !== isRight)
     ) {
       if (isFast) {
-        if (!this.isJumping) {
-          this.updateAnim('M_Jog_001')
+        if (isFront) {
+          if (isJump) {
+            this.updateAnim('M_Jog_Jump_001')
+          } else {
+            this.updateAnim('M_Jog_001')
+          }
+        } else if (isBack) {
+          this.updateAnim('M_Jog_Backwards_001')
+        } else if (isLeft) {
+          this.updateAnim('M_Jog_Strafe_Left_001')
+        } else if (isRight) {
+          this.updateAnim('M_Jog_Strafe_Right_001')
         }
-      } else if (!this.isJumping) {
-        this.updateAnim('F_Walk_002')
+      } else if (isFront) {
+        if (isJump) {
+          this.updateAnim('F_Walk_Jump_002')
+        } else {
+          this.updateAnim('F_Walk_002')
+        }
+      } else if (isBack) {
+        this.updateAnim('F_Walk_Backwards_001')
+      } else if (isLeft) {
+        this.updateAnim('F_Walk_Strafe_Left_001')
+      } else if (isRight) {
+        this.updateAnim('F_Walk_Strafe_Right_001')
       }
-    } else if (!this.isJumping) {
+    } else {
       this.updateAnim('F_Standing_Idle_001')
     }
   }

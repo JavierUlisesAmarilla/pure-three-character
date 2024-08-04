@@ -2,19 +2,14 @@ import {Euler, PerspectiveCamera, Vector3} from 'three'
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
 
 import {
-  BACK_DIRECTION_VEC3,
   CAMERA_OFFSET,
   FRONT_DIRECTION_VEC3,
   IS_ORBIT_CONTROLS_USED,
-  LEFT_DIRECTION_VEC3,
-  RIGHT_DIRECTION_VEC3,
-  Y_VEC3,
 } from '../utils/constants'
 import {Experience} from './Experience'
 
 const rotSpeed = 0.006
 const limitRotXFactor = 0.2
-const centerVec3 = new Vector3()
 const dummyVec3 = new Vector3()
 const dummyEuler = new Euler(0, 0, 0, 'ZYX')
 
@@ -51,8 +46,7 @@ export class Camera {
         0.1,
         2000,
     )
-    this.instance.position.set(0, 2, -3)
-    this.instance.rotation.set(0, Math.PI, 0)
+    this.instance.position.copy(CAMERA_OFFSET)
     this.scene.add(this.instance)
   }
 
@@ -69,10 +63,7 @@ export class Camera {
       })
 
       document.addEventListener('mousemove', (event) => {
-        if (
-          document.pointerLockElement === document.body &&
-          this.instance
-        ) {
+        if (document.pointerLockElement === document.body && this.instance) {
           let {movementX, movementY} = event
           if (movementX > 0) {
             movementX = Math.log(movementX)
@@ -112,25 +103,13 @@ export class Camera {
   update() {
     if (!IS_ORBIT_CONTROLS_USED && this.instance && this.character) {
       this.character.getWorldPosition(this.instance.position)
-      dummyEuler.set(this.cameraRotX, this.cameraRotY, 0)
-      this.instance.quaternion.setFromEuler(dummyEuler)
+      this.instance.quaternion.setFromEuler(
+          dummyEuler.set(this.cameraRotX, this.cameraRotY, 0),
+      )
       this.instance.position.add(
           dummyVec3.copy(CAMERA_OFFSET).applyQuaternion(this.instance.quaternion),
       )
-
-      const frontDirectionVec3 = centerVec3
-          .sub(this.instance.position)
-          .setY(0)
-          .normalize()
-      const backDirectionVec3 = frontDirectionVec3.clone().negate()
-      const leftDirectionVec3 = frontDirectionVec3
-          .clone()
-          .applyAxisAngle(Y_VEC3, Math.PI / 2)
-      const rightDirectionVec3 = leftDirectionVec3.clone().negate()
-      FRONT_DIRECTION_VEC3.copy(frontDirectionVec3)
-      BACK_DIRECTION_VEC3.copy(backDirectionVec3)
-      LEFT_DIRECTION_VEC3.copy(leftDirectionVec3)
-      RIGHT_DIRECTION_VEC3.copy(rightDirectionVec3)
+      FRONT_DIRECTION_VEC3.copy(dummyVec3.setY(0).negate().normalize())
     }
   }
 }
